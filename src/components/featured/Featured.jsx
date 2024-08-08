@@ -1,8 +1,17 @@
 import './featured.scss'
 import PlayArrow from '@mui/icons-material/PlayArrow';
 import InfoOutlined from '@mui/icons-material/InfoOutlined';
+import { Slide } from 'react-slideshow-image';
+import 'react-slideshow-image/dist/styles.css'
 
 const Featured = ({ type }) => {
+    const slidesData = [
+        { image: 'https://4kwallpapers.com/images/wallpapers/kalki-2898-ad-2024-2560x1440-17165.jpg', infoImage: 'https://res.cloudinary.com/stayease/image/upload/v1723108295/klazsudev0rcrjzpedg0.png', description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure quaerat illum amet eveniet ab unde facere alias nesciunt eligendi quae! Aliquid praesentium delectus, facere architecto ducimus incidunt non quasi est.' },
+        { image: 'https://4kwallpapers.com/images/wallpapers/kalki-2898-ad-2024-2560x1440-17165.jpg', infoImage: 'https://res.cloudinary.com/stayease/image/upload/v1723108295/klazsudev0rcrjzpedg0.png', description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure quaerat illum amet eveniet ab unde facere alias nesciunt eligendi quae! Aliquid praesentium delectus, facere architecto ducimus incidunt non quasi est.' },
+        { image: 'https://4kwallpapers.com/images/wallpapers/kalki-2898-ad-2024-2560x1440-17165.jpg', infoImage: 'https://res.cloudinary.com/stayease/image/upload/v1723108295/klazsudev0rcrjzpedg0.png', description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure quaerat illum amet eveniet ab unde facere alias nesciunt eligendi quae! Aliquid praesentium delectus, facere architecto ducimus incidunt non quasi est.' },
+        { image: 'https://4kwallpapers.com/images/wallpapers/kalki-2898-ad-2024-2560x1440-17165.jpg', infoImage: 'https://res.cloudinary.com/stayease/image/upload/v1723108295/klazsudev0rcrjzpedg0.png', description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure quaerat illum amet eveniet ab unde facere alias nesciunt eligendi quae! Aliquid praesentium delectus, facere architecto ducimus incidunt non quasi est.' },
+        // Add more slides data here
+    ];
     return (
         <div className='featured'>
             {type && (
@@ -27,29 +36,33 @@ const Featured = ({ type }) => {
                 </div>
             )}
 
-            <img
-                src="https://images.pexels.com/photos/6899260/pexels-photo-6899260.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"
-                alt="" />
+            <Slide
+                autoplay
+                transitionDuration={2000}
+                duration={3000}
+                easing='ease'>
+                {slidesData.map((slide, index) => (
+                    <div className="slide" key={index}>
+                        <img src={slide.image} alt="Featured" />
+                        <div className="info">
+                            <img src={slide.infoImage} alt="Info" />
+                            <span className="desc">{slide.description}</span>
+                            <div className="buttons">
+                                <button className="play">
+                                    <PlayArrow />
+                                    <span>Play</span>
+                                </button>
+                                <button className="more">
+                                    <InfoOutlined />
+                                    <span>Info</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </Slide>
 
-            <div className="info">
-                <img
-                    src="https://occ-0-1432-1433.1.nflxso.net/dnm/api/v6/LmEnxtiAuzezXBjYXPuDgfZ4zZQ/AAAABUZdeG1DrMstq-YKHZ-dA-cx2uQN_YbCYx7RABDk0y7F8ZK6nzgCz4bp5qJVgMizPbVpIvXrd4xMBQAuNe0xmuW2WjoeGMDn1cFO.webp?r=df1"
-                    alt=""
-                />
-                <span className="desc">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure quaerat illum amet eveniet ab unde facere alias nesciunt eligendi quae! Aliquid praesentium delectus, facere architecto ducimus incidunt non quasi est.
-                </span>
-                <div className="buttons">
-                    <button className="play">
-                        <PlayArrow />
-                        <span>Play</span>
-                    </button>
-                    <button className="more">
-                        <InfoOutlined />
-                        <span>Info</span>
-                    </button>
-                </div>
-            </div>
+
         </div>
     )
 }

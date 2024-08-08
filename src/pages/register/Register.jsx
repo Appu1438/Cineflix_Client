@@ -43,7 +43,6 @@ export default function Register() {
           Ready to watch? Enter your email to create or restart your membership.
         </p>
         {!email ? (
-          <>
             <div className="input">
               <input type="email" placeholder='Enter Your Email Address' ref={emailRef} />
               <button className="registerButton" onClick={handleStart}>
@@ -51,9 +50,7 @@ export default function Register() {
               </button>
             </div>
 
-          </>
         ) : (
-          <>
             <div className="input">
               <input type={passwordVisible ? 'text' : 'password'} placeholder='Enter Your Password' ref={passwordRef} />
               <button className="togglePasswordButton" onClick={() => setPasswordVisible(prev => !prev)}>
@@ -64,7 +61,6 @@ export default function Register() {
               </button>
             </div>
 
-          </>
         )}
       </div>
     </div>

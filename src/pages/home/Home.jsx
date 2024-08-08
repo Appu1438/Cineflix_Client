@@ -7,8 +7,7 @@ export default function Home() {
   return (
     <div className='home'>
       <Navbar />
-      <Featured/>
-      <List/>
+      <Featured type={"series"}/>
       <List/>
       <List/>
       <List/>
