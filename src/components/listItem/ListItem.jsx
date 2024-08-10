@@ -7,7 +7,7 @@ import ThumbDownOutlined from '@mui/icons-material/ThumbDownOutlined';
 import { useState } from 'react';
 
 
-export default function ListItem({ index }) {
+export default function ListItem({ index, item }) {
 
     const [isHovered, setIsHovered] = useState(false)
     const trailer = "https://www.w3schools.com/html/mov_bbb.mp4";
@@ -41,7 +41,7 @@ export default function ListItem({ index }) {
                         </div>
                         <div className="desc">
                             Lorem ipsum dolor sit amet consectetur adipisicing elit. Corporis ipsam dignissimos iste, molestias nisi dicta eveniet asperiores,
-                             </div>
+                        </div>
                         <div className="genre">Action</div>
                     </div>
                 </>

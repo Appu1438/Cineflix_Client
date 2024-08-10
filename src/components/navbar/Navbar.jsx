@@ -3,7 +3,7 @@ import Search from '@mui/icons-material/Search';
 import Notifications from '@mui/icons-material/Notifications';
 import ArrowDropDown from '@mui/icons-material/ArrowDropDown';
 import { useState } from 'react';
-
+import { Link } from 'react-router-dom';
 
 const Navbar = () => {
     const [isScrolled, setIsScrolled] = useState(false)
@@ -21,12 +21,18 @@ const Navbar = () => {
                     <img
                         src="/assests/images/CINEFLIX2.png"
                         alt="Cineflix" />
-                    {/* <img
-                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Netflix_2015_logo.svg/2560px-Netflix_2015_logo.svg.png"
-                        alt="Cineflix" /> */}
-                    <span>Homepage</span>
-                    <span>Movies</span>
-                    <span>Series</span>
+
+                    <Link to={'/'} className='link'>
+                        <span>Homepage</span>
+                    </Link>
+
+                    <Link to={'/movies'} className='link'>
+                        <span>Movies</span>
+                    </Link>
+
+                    <Link to={'/series'} className='link'>
+                        <span>Series</span>
+                    </Link>
                     <span>New and Popular</span>
                     <span>My List</span>
                 </div>
