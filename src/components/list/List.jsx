@@ -35,7 +35,7 @@ const List = ({ list }) => {
                 </div>
                 <div className="container" ref={listRef}>
                     {list.content.map((item, index) => (
-                        <ListItem index={index} item={item} />
+                        <ListItem index={index} item={item} key={index} />
                     ))}
                 </div>
                 <div onClick={() => handleClick('right')}>

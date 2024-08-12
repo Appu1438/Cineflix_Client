@@ -4,13 +4,34 @@ import PlayArrow from '@mui/icons-material/PlayArrow';
 import Add from '@mui/icons-material/Add';
 import ThumbUpAltOutlined from '@mui/icons-material/ThumbUpAltOutlined';
 import ThumbDownOutlined from '@mui/icons-material/ThumbDownOutlined';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 
 export default function ListItem({ index, item }) {
 
     const [isHovered, setIsHovered] = useState(false)
+    const [movie, setMovie] = useState('')
     const trailer = "https://www.w3schools.com/html/mov_bbb.mp4";
+
+    useEffect(() => {
+        const getMovie = async () => {
+            try {
+                const response = await axios.get(
+                    `${process.env.REACT_APP_API_URL}movies/find/${item}`, {
+                    headers: {
+                        token: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YTc4MWIzNjQ3YzEzNjYyNzVjNjkwOCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTcyMzI4MTQzOSwiZXhwIjoxNzIzNzEzNDM5fQ.GcSudNwYKYaaVtTdvHvXvuTqCUQzlMYz5MNZXTHNVM4",
+                    }
+                })
+                setMovie(response.data)
+            } catch (error) {
+                console.log(error)
+            }
+        }
+
+        getMovie()
+    }, [item])
 
     return (
         <div className='listItem'
@@ -18,7 +39,7 @@ export default function ListItem({ index, item }) {
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}>
             <img
-                src="https://occ-0-1723-92.1.nflxso.net/dnm/api/v6/X194eJsgWBDE2aQbaNdmCXGUP-Y/AAAABU7D36jL6KiLG1xI8Xg_cZK-hYQj1L8yRxbQuB0rcLCnAk8AhEK5EM83QI71bRHUm0qOYxonD88gaThgDaPu7NuUfRg.jpg?r=4ee"
+                src={movie.imgsm}
                 alt=""
             />
             {isHovered && (
@@ -27,7 +48,11 @@ export default function ListItem({ index, item }) {
 
                     <div className="itemInfo">
                         <div className="icons">
-                            <PlayArrow className='icon' />
+                            <Link to="/watch" state={{ movie }} className='link'>
+
+                                <PlayArrow className='icon' />
+                            </Link>
+
                             <Add className='icon' />
                             <ThumbUpAltOutlined className='icon' />
                             <ThumbDownOutlined className='icon' />
@@ -35,14 +60,14 @@ export default function ListItem({ index, item }) {
                         </div>
 
                         <div className="itemInfoTop">
-                            <span>1 hour 14 mins</span>
-                            <span className='limit'>+16</span>
-                            <span>1999</span>
+                            <span>{movie.year}</span>
+                            <span className='limit'>+{movie.limit}</span>
+                            <span>{movie.year}</span>
                         </div>
                         <div className="desc">
-                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Corporis ipsam dignissimos iste, molestias nisi dicta eveniet asperiores,
+                            {movie.desc}
                         </div>
-                        <div className="genre">Action</div>
+                        <div className="genre">{movie.genre}</div>
                     </div>
                 </>
             )}

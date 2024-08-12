@@ -19,8 +19,7 @@ function App() {
             <Route path='/watch' element={<Watch />} />
           </>
         )}
-
-
+        
         <Route path='/register' element={!user ? <Register /> : <Navigate to={'/'} />} />
         <Route path='/login' element={!user ? <Login /> : <Navigate to={'/'} />} />
       </Routes>
