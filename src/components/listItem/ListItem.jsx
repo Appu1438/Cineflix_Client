@@ -13,7 +13,6 @@ export default function ListItem({ index, item }) {
 
     const [isHovered, setIsHovered] = useState(false)
     const [movie, setMovie] = useState('')
-    const trailer = "https://www.w3schools.com/html/mov_bbb.mp4";
 
     useEffect(() => {
         const getMovie = async () => {
@@ -21,7 +20,7 @@ export default function ListItem({ index, item }) {
                 const response = await axios.get(
                     `${process.env.REACT_APP_API_URL}movies/find/${item}`, {
                     headers: {
-                        token: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YTc4MWIzNjQ3YzEzNjYyNzVjNjkwOCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTcyMzI4MTQzOSwiZXhwIjoxNzIzNzEzNDM5fQ.GcSudNwYKYaaVtTdvHvXvuTqCUQzlMYz5MNZXTHNVM4",
+                        token: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YTc4MWIzNjQ3YzEzNjYyNzVjNjkwOCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTcyNDY1NDYxNCwiZXhwIjoxNzI1MDg2NjE0fQ.MHnkqE-isYy9fNQK0QPPjX07gLW805Td1bsW1Koz2zk",
                     }
                 })
                 setMovie(response.data)
@@ -44,7 +43,7 @@ export default function ListItem({ index, item }) {
             />
             {isHovered && (
                 <>
-                    <video src={trailer} autoPlay loop controls />
+                    <video src={movie.trailer} autoPlay loop controls />
 
                     <div className="itemInfo">
                         <div className="icons">
@@ -60,7 +59,7 @@ export default function ListItem({ index, item }) {
                         </div>
 
                         <div className="itemInfoTop">
-                            <span>{movie.year}</span>
+                            <span>{movie.duration}</span>
                             <span className='limit'>+{movie.limit}</span>
                             <span>{movie.year}</span>
                         </div>

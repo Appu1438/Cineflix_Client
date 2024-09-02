@@ -11,7 +11,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path='/' element={user ? <Home /> : <Navigate to={'/login'} />} />
+        <Route path='/' element={user ? <Home type={null} /> : <Navigate to={'/login'} />} />
         {user && (
           <>
             <Route path='/movies' element={<Home type={'movie'} />} />
@@ -27,6 +27,6 @@ function App() {
 
 
   );
-}
+} 
 
 export default App;

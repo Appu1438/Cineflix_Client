@@ -15,7 +15,7 @@ export default function Watch() {
             </Link>
             <video
                 className='video'
-                src="https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+                src={movie.video}
                 autoPlay
                 controls
                 progress />
