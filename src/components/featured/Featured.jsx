@@ -5,6 +5,7 @@ import { Slide } from 'react-slideshow-image';
 import 'react-slideshow-image/dist/styles.css';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import axiosInstance from '../../api/axiosInstance';
 
 const Featured = ({ type, setGenre }) => {
   const slidesData = [
@@ -12,6 +13,29 @@ const Featured = ({ type, setGenre }) => {
     { img: 'https://images.indianexpress.com/2024/02/Premalu-movie-review-09022024.jpg', imgTitle: 'https://img10.hotstar.com/image/upload/f_auto,h_156/sources/r1/cms/prod/8256/1712839838256-t', desc: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure quaerat illum amet eveniet ab unde facere alias nesciunt eligendi quae! Aliquid praesentium delectus, facere architecto ducimus incidunt non quasi est.' },
     { img: 'https://media5.bollywoodhungama.in/wp-content/uploads/2017/09/War-11.jpg', imgTitle: 'https://res.cloudinary.com/stayease/image/upload/v1723108295/klazsudev0rcrjzpedg0.png', desc: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure quaerat illum amet eveniet ab unde facere alias nesciunt eligendi quae! Aliquid praesentium delectus, facere architecto ducimus incidunt non quasi est.' },
     // Add more slides data here
+  ];
+
+  const genres = [
+    { value: "Action", name: "Action" },
+    { value: "Adventure", name: "Adventure" },
+    { value: "Animation", name: "Animation" },
+    { value: "Biography", name: "Biography" },
+    { value: "Comedy", name: "Comedy" },
+    { value: "Crime", name: "Crime" },
+    { value: "Documentary", name: "Documentary" },
+    { value: "Drama", name: "Drama" },
+    { value: "Family", name: "Family" },
+    { value: "Fantasy", name: "Fantasy" },
+    { value: "Historical", name: "Historical" },
+    { value: "Horror", name: "Horror" },
+    { value: "Musical", name: "Musical" },
+    { value: "Mystery", name: "Mystery" },
+    { value: "Romance", name: "Romance" },
+    { value: "Sci-Fi", name: "Sci-Fi" },
+    { value: "Sports", name: "Sports" },
+    { value: "Thriller", name: "Thriller" },
+    { value: "War", name: "War" },
+    { value: "Western", name: "Western" }
   ];
 
   const [content, setContent] = useState([]);
@@ -28,12 +52,7 @@ const Featured = ({ type, setGenre }) => {
   useEffect(() => {
     const getRandomContent = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}movies/random?type=${type}`, {
-          headers: {
-            token: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YTc4MWIzNjQ3YzEzNjYyNzVjNjkwOCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTcyNDY1NDYxNCwiZXhwIjoxNzI1MDg2NjE0fQ.MHnkqE-isYy9fNQK0QPPjX07gLW805Td1bsW1Koz2zk",
-          }
-        });
+        const response = await axiosInstance.get(`movies/random?type=${type}`);
         console.log('Fetched content:', response.data);
         setContent(response.data);
       } catch (error) {
@@ -51,19 +70,10 @@ const Featured = ({ type, setGenre }) => {
           <span>{type === 'movie' ? 'Movies' : 'Series'}</span>
           <select name="genre" id="genre" value={selectedGenre} onChange={handleGenreChange}>
             <option>Genre</option>
-            <option value="adventure">Adventure</option>
-            <option value="comedy">Comedy</option>
-            <option value="crime">Crime</option>
-            <option value="fantasy">Fantasy</option>
-            <option value="historical">Historical</option>
-            <option value="horror">Horror</option>
-            <option value="romance">Romance</option>
-            <option value="sci-fi">Sci-fi</option>
-            <option value="thriller">Thriller</option>
-            <option value="western">Western</option>
-            <option value="animation">Animation</option>
-            <option value="drama">Drama</option>
-            <option value="documentary">Documentary</option>
+            {genres.map((item)=>(
+            <option value={item.value} key={item.value}>{item.name}</option>
+
+            ))}
           </select>
         </div>
       )}

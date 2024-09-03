@@ -7,6 +7,7 @@ import ThumbDownOutlined from '@mui/icons-material/ThumbDownOutlined';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import axiosInstance from '../../api/axiosInstance';
 
 
 export default function ListItem({ index, item }) {
@@ -17,13 +18,10 @@ export default function ListItem({ index, item }) {
     useEffect(() => {
         const getMovie = async () => {
             try {
-                const response = await axios.get(
-                    `${process.env.REACT_APP_API_URL}movies/find/${item}`, {
-                    headers: {
-                        token: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YTc4MWIzNjQ3YzEzNjYyNzVjNjkwOCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTcyNDY1NDYxNCwiZXhwIjoxNzI1MDg2NjE0fQ.MHnkqE-isYy9fNQK0QPPjX07gLW805Td1bsW1Koz2zk",
-                    }
-                })
+                const response = await axiosInstance.get(`movies/find/${item}`)
                 setMovie(response.data)
+                console.log(response.data);
+                
             } catch (error) {
                 console.log(error)
             }
