@@ -6,6 +6,7 @@ import 'react-slideshow-image/dist/styles.css';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import axiosInstance from '../../api/axiosInstance';
+import { fetchGenres } from '../../api/fetchGenres';
 
 const Featured = ({ type, setGenre }) => {
   const slidesData = [
@@ -15,29 +16,15 @@ const Featured = ({ type, setGenre }) => {
     // Add more slides data here
   ];
 
-  const genres = [
-    { value: "Action", name: "Action" },
-    { value: "Adventure", name: "Adventure" },
-    { value: "Animation", name: "Animation" },
-    { value: "Biography", name: "Biography" },
-    { value: "Comedy", name: "Comedy" },
-    { value: "Crime", name: "Crime" },
-    { value: "Documentary", name: "Documentary" },
-    { value: "Drama", name: "Drama" },
-    { value: "Family", name: "Family" },
-    { value: "Fantasy", name: "Fantasy" },
-    { value: "Historical", name: "Historical" },
-    { value: "Horror", name: "Horror" },
-    { value: "Musical", name: "Musical" },
-    { value: "Mystery", name: "Mystery" },
-    { value: "Romance", name: "Romance" },
-    { value: "Sci-Fi", name: "Sci-Fi" },
-    { value: "Sports", name: "Sports" },
-    { value: "Thriller", name: "Thriller" },
-    { value: "War", name: "War" },
-    { value: "Western", name: "Western" }
-  ];
+  const [genres, setGenres] = useState([]);
 
+  useEffect(() => {
+    const loadGenres = async () => {
+        const fetchedGenres = await fetchGenres();
+        setGenres(fetchedGenres)
+    };
+    loadGenres();
+}, []);
   const [content, setContent] = useState([]);
   const [selectedGenre, setSelectedGenre] = useState('');
 
