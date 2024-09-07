@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import axiosInstance from '../../api/axiosInstance';
 import { fetchGenres } from '../../api/fetchGenres';
+import { Link } from 'react-router-dom';
 
 const Featured = ({ type, setGenre }) => {
   const slidesData = [
@@ -20,11 +21,12 @@ const Featured = ({ type, setGenre }) => {
 
   useEffect(() => {
     const loadGenres = async () => {
-        const fetchedGenres = await fetchGenres();
-        setGenres(fetchedGenres)
+      const fetchedGenres = await fetchGenres();
+      setGenres(fetchedGenres)
     };
     loadGenres();
-}, []);
+  }, []);
+
   const [content, setContent] = useState([]);
   const [selectedGenre, setSelectedGenre] = useState('');
 
@@ -57,8 +59,8 @@ const Featured = ({ type, setGenre }) => {
           <span>{type === 'movie' ? 'Movies' : 'Series'}</span>
           <select name="genre" id="genre" value={selectedGenre} onChange={handleGenreChange}>
             <option>Genre</option>
-            {genres.map((item)=>(
-            <option value={item.value} key={item.value}>{item.name}</option>
+            {genres.map((item) => (
+              <option value={item.value} key={item.value}>{item.name}</option>
 
             ))}
           </select>
@@ -70,17 +72,19 @@ const Featured = ({ type, setGenre }) => {
         transitionDuration={2000}
         duration={3000}
         easing='ease'>
-        {slidesData.map((slide, index) => (
+        {content.map((slide, index) => (
           <div className="slide" key={index}>
             <img src={slide.img} alt="Featured" />
             <div className="info">
               <img src={slide.imgTitle} alt="Info" />
               <span className="desc">{slide.desc}</span>
               <div className="buttons">
-                <button className="play">
-                  <PlayArrow />
-                  <span>Play</span>
-                </button>
+                <Link to="/watch" state={{ movie: slide }} className='link'>
+                  <button className="play">
+                    <PlayArrow className='icon' />
+                    <span>Play</span>
+                  </button>
+                </Link>
                 <button className="more">
                   <InfoOutlined />
                   <span>Info</span>

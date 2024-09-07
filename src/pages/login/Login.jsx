@@ -1,12 +1,21 @@
-import { useRef, useState } from 'react';
+import { useContext, useRef, useState } from 'react';
 import './login.scss'
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import { login } from '../../context/authContext/apiCalls';
+import { AuthContext } from '../../context/authContext/AuthContext';
 
 
 export default function Login() {
 
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const { dispatch } = useContext(AuthContext)
 
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    login({ email, password }, dispatch)
+  }
   return (
     <div className='login'>
       <div className="top">
@@ -23,9 +32,9 @@ export default function Login() {
 
         <form action="">
           <h1>Sign In</h1>
-          <input type="email" placeholder='Enter Your Email Address' />
-          <input type="password" placeholder='Enter Your Password' />
-          <button className="loginButton">
+          <input type="email" placeholder='Enter Your Email Address' onChange={(e) => setEmail(e.target.value)} />
+          <input type="password" placeholder='Enter Your Password' onChange={(e) => setPassword(e.target.value)} />
+          <button className="loginButton" onClick={handleSubmit}>
             Sign In
           </button>
           <span>New to Cineflix? <b>Sign up now.</b></span>
