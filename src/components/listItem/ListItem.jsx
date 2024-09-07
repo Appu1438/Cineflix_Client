@@ -26,6 +26,8 @@ export default function ListItem({ index, item }) {
             try {
                 const response = await axiosInstance.get(`movies/find/${item}`);
                 setMovie(response.data);
+                console.log(response.data);
+                
             } catch (error) {
                 console.error(error);
             }

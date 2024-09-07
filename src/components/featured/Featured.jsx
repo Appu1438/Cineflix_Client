@@ -10,12 +10,12 @@ import { fetchGenres } from '../../api/fetchGenres';
 import { Link } from 'react-router-dom';
 
 const Featured = ({ type, setGenre }) => {
-  const slidesData = [
-    { img: 'https://4kwallpapers.com/images/wallpapers/kalki-2898-ad-2024-2560x1440-17165.jpg', imgTitle: 'https://res.cloudinary.com/stayease/image/upload/v1723108295/klazsudev0rcrjzpedg0.png', desc: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure quaerat illum amet eveniet ab unde facere alias nesciunt eligendi quae! Aliquid praesentium delectus, facere architecto ducimus incidunt non quasi est.' },
-    { img: 'https://images.indianexpress.com/2024/02/Premalu-movie-review-09022024.jpg', imgTitle: 'https://img10.hotstar.com/image/upload/f_auto,h_156/sources/r1/cms/prod/8256/1712839838256-t', desc: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure quaerat illum amet eveniet ab unde facere alias nesciunt eligendi quae! Aliquid praesentium delectus, facere architecto ducimus incidunt non quasi est.' },
-    { img: 'https://media5.bollywoodhungama.in/wp-content/uploads/2017/09/War-11.jpg', imgTitle: 'https://res.cloudinary.com/stayease/image/upload/v1723108295/klazsudev0rcrjzpedg0.png', desc: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure quaerat illum amet eveniet ab unde facere alias nesciunt eligendi quae! Aliquid praesentium delectus, facere architecto ducimus incidunt non quasi est.' },
-    // Add more slides data here
-  ];
+  // const slidesData = [
+  //   { img: 'https://4kwallpapers.com/images/wallpapers/kalki-2898-ad-2024-2560x1440-17165.jpg', imgTitle: 'https://res.cloudinary.com/stayease/image/upload/v1723108295/klazsudev0rcrjzpedg0.png', desc: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure quaerat illum amet eveniet ab unde facere alias nesciunt eligendi quae! Aliquid praesentium delectus, facere architecto ducimus incidunt non quasi est.' },
+  //   { img: 'https://images.indianexpress.com/2024/02/Premalu-movie-review-09022024.jpg', imgTitle: 'https://img10.hotstar.com/image/upload/f_auto,h_156/sources/r1/cms/prod/8256/1712839838256-t', desc: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure quaerat illum amet eveniet ab unde facere alias nesciunt eligendi quae! Aliquid praesentium delectus, facere architecto ducimus incidunt non quasi est.' },
+  //   { img: 'https://media5.bollywoodhungama.in/wp-content/uploads/2017/09/War-11.jpg', imgTitle: 'https://res.cloudinary.com/stayease/image/upload/v1723108295/klazsudev0rcrjzpedg0.png', desc: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure quaerat illum amet eveniet ab unde facere alias nesciunt eligendi quae! Aliquid praesentium delectus, facere architecto ducimus incidunt non quasi est.' },
+  //   // Add more slides data here
+  // ];
 
   const [genres, setGenres] = useState([]);
 
