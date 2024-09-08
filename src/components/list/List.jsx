@@ -34,7 +34,7 @@ const List = ({ list }) => {
                         style={{ display: !IsMoved && 'none' }} />
                 </div>
                 <div className="container" ref={listRef}>
-                    {list.content.map((item, index) => (
+                    {list?.content.map((item, index) => (
                         <ListItem index={index} item={item} key={index} />
                     ))}
                 </div>

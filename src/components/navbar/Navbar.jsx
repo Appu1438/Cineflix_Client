@@ -5,7 +5,7 @@ import ArrowDropDown from '@mui/icons-material/ArrowDropDown';
 import { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../../context/authContext/AuthContext';
-import { logout } from '../../context/authContext/AuthAction';
+import { logout } from '../../context/authContext/apiCalls';
 
 const Navbar = () => {
     const [isScrolled, setIsScrolled] = useState(false)
@@ -16,8 +16,7 @@ const Navbar = () => {
         return () => (window.onscroll = null)
     }
     const handleLogout = async () => {
-
-        dispatch(logout())
+        logout(user._id,dispatch)
     }
     console.log(isScrolled)
     return (
