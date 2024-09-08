@@ -67,8 +67,9 @@ axiosInstance.interceptors.response.use(
                 console.log('New access token:', accessToken);
 
                 // Retry the original request with the new access token
-                axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-                // originalRequest.headers['Authorization'] = `Bearer ${accessToken}`;
+                // axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+                originalRequest.headers['Authorization'] = `Bearer ${accessToken}`;
+                return axiosInstance(originalRequest);
             } catch (refreshError) {
                 console.log('Error in refreshing token:', refreshError);
                 localStorage.removeItem('user'); // Clear user data
