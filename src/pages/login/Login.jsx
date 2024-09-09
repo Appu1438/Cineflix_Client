@@ -1,49 +1,55 @@
-import { useContext, useRef, useState } from 'react';
-import './login.scss'
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import { useContext, useState } from 'react';
+import './login.scss';
 import { login } from '../../context/authContext/apiCalls';
 import { AuthContext } from '../../context/authContext/AuthContext';
-
-
+import { Link } from 'react-router-dom'
 export default function Login() {
-
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const { dispatch } = useContext(AuthContext)
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const { dispatch } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    login({ email, password }, dispatch)
-  }
+    e.preventDefault();
+    login({ email, password }, dispatch);
+  };
+
   return (
-    <div className='login'>
-      <div className="top">
-        <div className="wrapper">
+    <div className="login">
+      <div className="container">
+        <form onSubmit={handleSubmit}>
           <img
             className="logo"
             src="/assests/images/CINEFLIX2.png"
             alt="Cineflix Logo"
           />
-        </div>
-      </div>
-
-      <div className="container">
-
-        <form action="">
           <h1>Sign In</h1>
-          <input type="email" placeholder='Enter Your Email Address' onChange={(e) => setEmail(e.target.value)} />
-          <input type="password" placeholder='Enter Your Password' onChange={(e) => setPassword(e.target.value)} />
-          <button className="loginButton" onClick={handleSubmit}>
+          <input
+            type="email"
+            placeholder="Enter Your Email Address"
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Enter Your Password"
+            onChange={(e) => setPassword(e.target.value)}
+            required  
+          />
+          <button className="loginButton" type="submit">
             Sign In
           </button>
-          <span>New to Cineflix? <b>Sign up now.</b></span>
+          <span>
+            <Link to={'/register'} className='link'>
+
+              New to Cineflix? <b>Sign up now.</b>
+            </Link>
+          </span>
+
           <small>
-            This page is protected by Google reCAPTCHA to ensure that you're not a bot. <b>Learn more</b>.
+            This page is protected by Google reCAPTCHA to ensure you're not a bot.{' '}
+            <b>Learn more</b>.
           </small>
-
         </form>
-
       </div>
     </div>
   );
