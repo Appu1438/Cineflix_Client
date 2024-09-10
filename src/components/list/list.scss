@@ -3,7 +3,8 @@
     margin-top: 20px;
     margin-bottom: 20px;
     color: white;
-    // overflow: auto;
+    overflow: hidden;
+    /* Hide overflowing content */
 
     .listTitle {
         font-size: 24px;
@@ -11,42 +12,31 @@
         margin-bottom: 10px;
         font-weight: bold;
         text-transform: uppercase;
-        /* Make the title stand out */
     }
 
     .wrapper {
-
         position: relative;
+        width: 100%;
+        display: flex;
+        overflow-x: scroll;
+        /* Enable scrolling */
+        scroll-behavior: smooth;
+        /* Smooth scrolling */
+        -webkit-overflow-scrolling: touch;
 
-        .sliderArrow {
-            width: 50px;
-            height: 100%;
-            background-color: rgb(22, 22, 22, 0.5);
-            color: white;
-            position: absolute;
-            // z-index: 1;
-            top: 0;
-            bottom: 0;
-            margin: auto;
-            cursor: pointer;
-
-            &.left {
-                left: 0;
-            }
-
-            &.right {
-                right: 0;
-
-            }
-        }
-
+       
         .container {
-            margin-left: 50px;
+            padding: 0 70px;
+            /* Padding for both sides */
             display: flex;
+            position: relative;
             width: max-content;
             margin-top: 10px;
             transform: translateX(0px);
-            transition: all 1s ease;
+            transition: transform 0.5s ease-in-out;
         }
     }
 }
+::-webkit-scrollbar {
+    display: none; /* Hide scrollbar */
+  }

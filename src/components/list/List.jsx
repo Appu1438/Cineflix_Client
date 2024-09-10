@@ -1,50 +1,90 @@
-import './list.scss'
-import ArrowBackIosOutlined from '@mui/icons-material/ArrowBackIosOutlined';
-import ArrowForwardIosOutlined from '@mui/icons-material/ArrowForwardIosOutlined';
-import ListItem from '../listItem/ListItem';
-import { useRef, useState } from 'react';
 
+import './list.scss';
+import { useRef, useState, useEffect } from 'react';
+import ListItem from '../listItem/ListItem';
 
 const List = ({ list }) => {
-    const [slideNumber, setSlideNumber] = useState(0)
-    const [IsMoved, setIsMoved] = useState(false)
-    const listRef = useRef()
+    const listRef = useRef();
+   
+    const [isScrolling, setIsScrolling] = useState(false);
 
-    const handleClick = (direction) => {
-        setIsMoved(true)
-        let distance = listRef.current.getBoundingClientRect().x - 50
+    // Variable to track if scrolling has stopped
+    let scrollTimeout;
 
-        if (direction == 'left' && slideNumber > 0) {
-            setSlideNumber(slideNumber - 1)
-            listRef.current.style.transform = `translateX(${230 + distance}px)`
+    // Function to handle scroll event
+    const handleScroll = () => {
+        // Set scrolling to true
+        setIsScrolling(true);
+
+        // Clear the previous timeout if any
+        if (scrollTimeout) {
+            clearTimeout(scrollTimeout);
         }
-        if (direction == 'right' && slideNumber < list.content.length - 8) {
-            setSlideNumber(slideNumber + 1)
-            listRef.current.style.transform = `translateX(${-230 + distance}px)`
-        }
-        console.log(distance);
 
-    }
+        // Set a timeout to determine when scrolling has stopped
+        scrollTimeout = setTimeout(() => {
+            setIsScrolling(false);
+        }, 500); // Adjust the delay as needed (150ms is a common choice)
+    };
+
+    useEffect(() => {
+        const container = listRef.current;
+
+        if (container) {
+            container.addEventListener('scroll', handleScroll);
+
+            return () => {
+                container.removeEventListener('scroll', handleScroll);
+                if (scrollTimeout) {
+                    clearTimeout(scrollTimeout);
+                }
+            };
+        }
+    }, []);
+    // Enable manual horizontal scrolling
+    const handleMouseDown = (e) => {
+        const scrollElement = listRef.current;
+        scrollElement.isDown = true;
+        scrollElement.startX = e.pageX - scrollElement.offsetLeft;
+        scrollElement.scrollLeft = scrollElement.scrollLeft;
+    };
+
+    const handleMouseMove = (e) => {
+        const scrollElement = listRef.current;
+        if (!scrollElement.isDown) return;
+        e.preventDefault();
+        const x = e.pageX - scrollElement.offsetLeft;
+        const walk = (x - scrollElement.startX) * 2; // Adjust scrolling speed
+        scrollElement.scrollLeft = scrollElement.scrollLeft - walk;
+    };
+
+    const handleMouseUp = () => {
+        listRef.current.isDown = false;
+    };
+
+    const handleMouseLeave = () => {
+        listRef.current.isDown = false;
+    };
+
     return (
         <div className="list">
             <span className="listTitle">{list.title}</span>
-            <div className="wrapper">
-                <div onClick={() => handleClick('left')}>
-                    <ArrowBackIosOutlined className="sliderArrow left"
-                        style={{ display: !IsMoved && 'none' }} />
+            <div
+                className="wrapper"
+                ref={listRef}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseLeave}
+            >
+                <div className="container">
+                {list?.content.concat(list?.content).map((item, index) => (
+                        <ListItem index={index} item={item} key={index} scrolled={isScrolling} />
+                  ))}
                 </div>
-                <div className="container" ref={listRef}>
-                    {list?.content.map((item, index) => (
-                        <ListItem index={index} item={item} key={index} />
-                    ))}
-                </div>
-                <div onClick={() => handleClick('right')}>
-                    <ArrowForwardIosOutlined className="sliderArrow right " />
-                </div>
-
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default List
+export default List;

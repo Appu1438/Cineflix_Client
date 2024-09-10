@@ -6,49 +6,60 @@ import ThumbDownOutlined from '@mui/icons-material/ThumbDownOutlined';
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axiosInstance from '../../api/axiosInstance';
-
-export default function ListItem({ index, item }) {
+export default function ListItem({ index, item, scrolled }) {
     const [isHovered, setIsHovered] = useState(false);
     const [movie, setMovie] = useState({});
-    const [hoverTop, setHoverTop] = useState(0);
+    const [hoverLeft, setHoverLeft] = useState(0);
     const hoverRef = useRef();
 
     useEffect(() => {
         if (isHovered && hoverRef.current) {
-            const hoverHeight = hoverRef.current.offsetHeight;
-            const newTop = -hoverHeight; // Adjust hoverTop based on content height
-            setHoverTop(newTop);
+            const itemRect = hoverRef.current.getBoundingClientRect();
+            const windowWidth = window.innerWidth;
+            const hoverWidth = 360; // Width after hover
+            const remainingSpace = windowWidth - itemRect.right;
+
+            // If there's not enough space on the right, adjust to fit within the window
+            if (remainingSpace < hoverWidth - itemRect.width) {
+                setHoverLeft(-(hoverWidth - itemRect.width));
+            } else {
+                setHoverLeft(0);
+            }
         }
     }, [isHovered]);
 
     useEffect(() => {
+
         const getMovie = async () => {
             try {
                 const response = await axiosInstance.get(`movies/find/${item}`);
-                setMovie(response.data);
-                console.log(response.data);
-                
+                item === response.data._id && setMovie(response.data);
             } catch (error) {
-                console.error(error);
+                if (error.name === 'CanceledError') {
+                    console.log('Request canceled', error.message);
+                } else {
+                    console.error(error);
+                }
             }
         };
+
         getMovie();
     }, [item]);
+
 
     return (
         <div
             className='listItem'
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
-            // ref={hoverRef}
-            // style={{ top: isHovered ? `${hoverTop}px` : '0px' }}
-
+            ref={hoverRef}
+            // style={{ left: isHovered ? `${hoverLeft}px` : '0px' }}
         >
             <img src={movie.imgsm} alt={movie.title} />
 
-            {isHovered && (
+            {isHovered && !scrolled && (
                 <>
-                <video src={movie.trailer} autoPlay loop controls />
+                    <video src={movie.trailer} autoPlay loop controls />
                     <div className="itemInfo">
                         <div className="icons">
                             <Link to="/watch" state={{ movie }} className='link'>
@@ -69,7 +80,7 @@ export default function ListItem({ index, item }) {
                             {Array.isArray(movie?.genre) ? movie.genre.join(', ') : movie?.genre}
                         </div>
                     </div>
-            </>
+                </>
             )}
         </div>
     );
