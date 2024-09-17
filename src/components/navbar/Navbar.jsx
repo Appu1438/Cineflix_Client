@@ -16,7 +16,7 @@ const Navbar = () => {
         return () => (window.onscroll = null)
     }
     const handleLogout = async () => {
-        logout(user._id,dispatch)
+        logout()
     }
     console.log(isScrolled)
     return (

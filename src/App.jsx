@@ -6,11 +6,13 @@ import Register from './pages/register/Register';
 import Watch from './pages/watch/Watch';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { AuthContext } from "./context/authContext/AuthContext";
+import { ToastContainer } from 'react-toastify';
 
 function App() {
   const { user } = useContext(AuthContext);
   return (
     <Router>
+      <ToastContainer position="top-right" autoClose={5000} />
       <Routes>
         <Route path='/' element={user ? <Home type={null} /> : <Navigate to={'/login'} />} />
         {user ? (

@@ -1,23 +1,33 @@
-import { useRef, useState } from 'react';
-import './register.scss'
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import axiosInstance from '../../api/axiosInstance';
+import { useState } from 'react';
+import './register.scss';
 import { Link, useNavigate } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; // Import CSS for react-toastify
+import axiosInstance from '../../api/axiosInstance';
 
 export default function Register() {
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       await axiosInstance.post('/auth/register', { username, email, password });
-      navigate('/login');
+      toast.success('Registration successful! Redirecting to login...');
+      setTimeout(() => navigate('/login'), 2000); // Redirect after success
     } catch (error) {
-      console.log(error);
+      if (error.response) {
+        // Handle Joi validation errors or email already exists
+        if (error.response.status === 400) {
+          toast.error(error.response.data.message);
+        } else if (error.response.status === 500) {
+          toast.error('Internal server error. Please try again later.');
+        }
+      } else {
+        toast.error('Something went wrong. Please try again.');
+      }
     }
   };
 
@@ -25,15 +35,9 @@ export default function Register() {
     <div className="register">
       <div className="container">
         <form onSubmit={handleSubmit}>
-          <img
-            className="logo"
-            src="/assests/images/CINEFLIX2.png"
-            alt="Cineflix Logo"
-          />
+          <img className="logo" src="/assests/images/CINEFLIX2.png" alt="Cineflix Logo" />
           <h1>Register</h1>
-          <p>
-          Ready to watch? Enter your email to create your account
-        </p>
+          <p>Ready to watch? Enter your email to create your account</p>
           <input
             type="email"
             placeholder="Enter Your Email Address"
@@ -56,17 +60,17 @@ export default function Register() {
             Sign In
           </button>
           <span>
-            <Link to={'/login'} className='link'>
-               Already have an Account? <b> Login now.</b>
+            <Link to={'/login'} className="link">
+              Already have an Account? <b>Login now.</b>
             </Link>
           </span>
-
           <small>
-            This page is protected by Google reCAPTCHA to ensure you're not a bot.{' '}
-            <b>Learn more</b>.
+            This page is protected by Google reCAPTCHA to ensure you're not a bot. <b>Learn more</b>.
           </small>
         </form>
       </div>
+      {/* Toast Container */}
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
     </div>
   );
 }

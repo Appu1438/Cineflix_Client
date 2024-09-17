@@ -24,7 +24,7 @@ const List = ({ list }) => {
         // Set a timeout to determine when scrolling has stopped
         scrollTimeout = setTimeout(() => {
             setIsScrolling(false);
-        }, 500); // Adjust the delay as needed (150ms is a common choice)
+        }, 1000); // Adjust the delay as needed (150ms is a common choice)
     };
 
     useEffect(() => {
@@ -78,7 +78,7 @@ const List = ({ list }) => {
                 onMouseLeave={handleMouseLeave}
             >
                 <div className="container">
-                {list?.content.concat(list?.content).map((item, index) => (
+                {list?.content?.map((item, index) => (
                         <ListItem index={index} item={item} key={index} scrolled={isScrolling} />
                   ))}
                 </div>

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { logout, refresh } from '../context/authContext/apiCalls';
 
 const storedUser = JSON.parse(localStorage.getItem('user'));
 
@@ -35,7 +36,7 @@ axiosInstance.interceptors.request.use(
 
 axiosInstance.interceptors.response.use(
     (response) => {
-        console.log('Response:', response); // Log the response
+        // console.log('Response:', response); // Log the response
         return response;
     },
     async (error) => {
@@ -44,52 +45,18 @@ axiosInstance.interceptors.response.use(
         // Check if the error is due to invalid access token and retry flag is not set
         if (error.response && (error.response.status === 401 || error.response.status === 403) && !originalRequest._retry) {
             originalRequest._retry = true;
-
-            let id;
-            const storedUser = JSON.parse(localStorage.getItem('user'));
-
-            if (storedUser && storedUser._id) {
-                id = storedUser._id;
-            } else {
-                console.log("No user ID found");
-                localStorage.removeItem('user');
-                window.location.href = '/login';
-                return Promise.reject(error);
-            }
-
             try {
-                console.log('Attempting to refresh token');
-                // Request a new access token using the user ID
-                const response = await axios.post('http://localhost:3001/api/auth/refresh', { id: id });
-
-                const { accessToken } = response.data;
-                updateAccessToken(accessToken);
-                console.log('New access token:', accessToken);
-
-                // Retry the original request with the new access token
-                // axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+                const accessToken = await refresh()
                 originalRequest.headers['Authorization'] = `Bearer ${accessToken}`;
                 return axiosInstance(originalRequest);
             } catch (refreshError) {
                 console.log('Error in refreshing token:', refreshError);
-                localStorage.removeItem('user'); // Clear user data
-                window.location.href = '/login'; // Redirect to login page
+                logout()
                 return Promise.reject(refreshError);
             }
         }
         return Promise.reject(error);
     }
 );
-
-
-// Function to update the access token in localStorage
-const updateAccessToken = (newAccessToken) => {
-    const userString = localStorage.getItem('user');
-    if (userString) {
-        const user = JSON.parse(userString);
-        user.accessToken = newAccessToken;
-        localStorage.setItem('user', JSON.stringify(user));
-    }
-};
 
 export default axiosInstance;
