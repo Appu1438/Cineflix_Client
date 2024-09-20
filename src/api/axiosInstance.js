@@ -21,42 +21,55 @@ axiosInstance.interceptors.request.use(
         } else {
             console.log("No user token found");
         }
-
         // Example of adding another custom header
         config.headers['X-Custom-Header'] = 'customHeaderValue';
-
         return config;
     },
     (error) => {
-        // Handle the error before sending the request
         return Promise.reject(error);
     }
 );
 
+let refreshTokenPromise = null;
 
 axiosInstance.interceptors.response.use(
     (response) => {
-        // console.log('Response:', response); // Log the response
         return response;
     },
     async (error) => {
         const originalRequest = error.config;
 
-        // Check if the error is due to invalid access token and retry flag is not set
+        // Check if error is due to an expired token (401/403)
         if (error.response && (error.response.status === 401 || error.response.status === 403) && !originalRequest._retry) {
             originalRequest._retry = true;
+
+            // If there's already a refresh in progress, return the same promise to avoid multiple refresh calls
+            if (!refreshTokenPromise) {
+                refreshTokenPromise = refresh(); // Refresh the token
+            }
+
             try {
-                const accessToken = await refresh()
+                const accessToken = await refreshTokenPromise; // Await the refresh operation
+
+                // Once resolved, reset the token refresh promise
+                refreshTokenPromise = null;
+
+                // Update Authorization header and retry the original request
                 originalRequest.headers['Authorization'] = `Bearer ${accessToken}`;
                 return axiosInstance(originalRequest);
+
             } catch (refreshError) {
-                console.log('Error in refreshing token:', refreshError);
-                logout()
+                // Handle refresh token error and log out if necessary
+                refreshTokenPromise = null;
+                console.log('Error refreshing token:', refreshError);
+                logout();
                 return Promise.reject(refreshError);
             }
         }
+
         return Promise.reject(error);
     }
 );
+
 
 export default axiosInstance;

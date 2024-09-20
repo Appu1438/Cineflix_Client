@@ -29,10 +29,11 @@ export default function ListItem({ index, item, scrolled }) {
     }, [isHovered]);
 
     useEffect(() => {
-
+        const controller = new AbortController();
+        const { signal } = controller;
         const getMovie = async () => {
             try {
-                const response = await axiosInstance.get(`movies/find/${item}`);
+                const response = await axiosInstance.get(`movies/find/${item}`, { signal });
                 item === response.data._id && setMovie(response.data);
             } catch (error) {
                 if (error.name === 'CanceledError') {
@@ -44,6 +45,9 @@ export default function ListItem({ index, item, scrolled }) {
         };
 
         getMovie();
+        return () => {
+            controller.abort();
+        }
     }, [item]);
 
 
@@ -53,7 +57,7 @@ export default function ListItem({ index, item, scrolled }) {
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             ref={hoverRef}
-            // style={{ left: isHovered ? `${hoverLeft}px` : '0px' }}
+        // style={{ left: isHovered ? `${hoverLeft}px` : '0px' }}
         >
             <img src={movie.imgsm} alt={movie.title} />
 

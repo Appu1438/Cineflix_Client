@@ -3,8 +3,6 @@ import './login.scss';
 import { login } from '../../context/authContext/apiCalls';
 import { AuthContext } from '../../context/authContext/AuthContext';
 import { Link } from 'react-router-dom'
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -17,8 +15,7 @@ export default function Login() {
 
   return (
     <div className="login">
-      <div className="container"> 
-      <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} />
+      <div className="container">
         <form onSubmit={handleSubmit}>
           <img
             className="logo"

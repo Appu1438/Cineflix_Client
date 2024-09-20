@@ -18,7 +18,9 @@ export default function Watch() {
                 src={movie.video}
                 autoPlay
                 controls
-                progress />
+                preload="metadata"  // Important to prevent full upfront download
+                playsInline
+            />
         </div>
     )
 }

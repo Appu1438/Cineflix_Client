@@ -14,7 +14,7 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axiosInstance.post('/auth/register', { username, email, password });
+      await axiosInstance.post('auth/register', { username, email, password });
       toast.success('Registration successful! Redirecting to login...');
       setTimeout(() => navigate('/login'), 2000); // Redirect after success
     } catch (error) {

@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import './app.scss'
 import Home from "./pages/home/Home";
 import Login from './pages/login/Login';
@@ -7,9 +7,16 @@ import Watch from './pages/watch/Watch';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { AuthContext } from "./context/authContext/AuthContext";
 import { ToastContainer } from 'react-toastify';
+import axiosInstance from './api/axiosInstance';
+import { fetchUserDetailsIfOutdated } from './context/authContext/apiCalls';
 
 function App() {
-  const { user } = useContext(AuthContext);
+  const { user, dispatch } = useContext(AuthContext);
+
+  useEffect(() => {
+    fetchUserDetailsIfOutdated(dispatch);
+  }, []);
+
   return (
     <Router>
       <ToastContainer position="top-right" autoClose={5000} />
