@@ -1,18 +1,25 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import Featured from '../../components/featured/Featured';
 import List from '../../components/list/List';
 import Navbar from '../../components/navbar/Navbar';
 import './Home.scss';
 import axios from 'axios';
 import axiosInstance from '../../api/axiosInstance';
+import { get_User_Fav } from '../../context/favContext/apiCalls';
+import { AuthContext } from '../../context/authContext/AuthContext';
+import { FavContext } from '../../context/favContext/FavContext';
+import { fetchUserDetailsIfOutdated } from '../../context/authContext/apiCalls';
 
 export default function Home({ type }) {
   const [lists, setLists] = useState([]);
   const [genre, setGenre] = useState(null);
 
+  const { user, dispatch: dispatchUser } = useContext(AuthContext)
+  const { dispatch: dispatchFav } = useContext(FavContext)
+ 
   useEffect(() => {
     const url = `lists/find${type ? "/?type=" + type : ""}${type && genre ? "&genre=" + genre : ""}`;
-    
+
     console.log('Genre:', genre);
     console.log('Type:', type);
     console.log('Fetching data from URL:', url);
@@ -30,6 +37,11 @@ export default function Home({ type }) {
 
     getRandomLists();
   }, [genre, type]);
+
+  useEffect(() => {
+    fetchUserDetailsIfOutdated(dispatchUser);
+    get_User_Fav(user._id, dispatchFav)
+  }, [])
 
   return (
     <div className='home'>

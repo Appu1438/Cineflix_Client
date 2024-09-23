@@ -13,9 +13,9 @@ import { fetchUserDetailsIfOutdated } from './context/authContext/apiCalls';
 function App() {
   const { user, dispatch } = useContext(AuthContext);
 
-  useEffect(() => {
-    fetchUserDetailsIfOutdated(dispatch);
-  }, []);
+  // useEffect(() => {
+  //   fetchUserDetailsIfOutdated(dispatch);
+  // }, []);
 
   return (
     <Router>

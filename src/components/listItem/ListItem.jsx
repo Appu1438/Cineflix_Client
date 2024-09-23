@@ -3,14 +3,23 @@ import PlayArrow from '@mui/icons-material/PlayArrow';
 import Add from '@mui/icons-material/Add';
 import ThumbUpAltOutlined from '@mui/icons-material/ThumbUpAltOutlined';
 import ThumbDownOutlined from '@mui/icons-material/ThumbDownOutlined';
-import { useEffect, useRef, useState } from 'react';
+import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
+
+import { useContext, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axiosInstance from '../../api/axiosInstance';
+import { add_User_Fav, get_User_Fav, remove_User_Fav } from '../../context/favContext/apiCalls';
+import { AuthContext } from '../../context/authContext/AuthContext';
+import { FavContext } from '../../context/favContext/FavContext';
+
 export default function ListItem({ index, item, scrolled }) {
     const [isHovered, setIsHovered] = useState(false);
     const [movie, setMovie] = useState({});
     const [hoverLeft, setHoverLeft] = useState(0);
     const hoverRef = useRef();
+
+    const { user } = useContext(AuthContext)
+    const { fav, dispatch } = useContext(FavContext)
 
     useEffect(() => {
         if (isHovered && hoverRef.current) {
@@ -51,6 +60,16 @@ export default function ListItem({ index, item, scrolled }) {
     }, [item]);
 
 
+    const handleFav = async () => {
+        if (fav?.content?.includes(movie._id)) {
+            // Remove from favorites if already added
+            remove_User_Fav({ userId: user._id, movieId: movie._id }, dispatch);
+        } else {
+            // Add to favorites if not added
+            add_User_Fav({ userId: user._id, movieId: movie._id }, dispatch);
+        }
+    };
+
     return (
         <div
             className='listItem'
@@ -69,7 +88,13 @@ export default function ListItem({ index, item, scrolled }) {
                             <Link to="/watch" state={{ movie }} className='link'>
                                 <PlayArrow className='icon' />
                             </Link>
-                            <Add className='icon' />
+                            <div onClick={handleFav}>
+                                {fav?.content?.includes(movie._id) ? (
+                                    <FavoriteBorder className="icon hovered" />
+                                ) : (
+                                    <FavoriteBorder className="icon" />
+                                )}
+                            </div>
                             <ThumbUpAltOutlined className='icon' />
                             <ThumbDownOutlined className='icon' />
                         </div>
