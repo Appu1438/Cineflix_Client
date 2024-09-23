@@ -39,7 +39,6 @@ export default function Home({ type }) {
   }, [genre, type]);
 
   useEffect(() => {
-    fetchUserDetailsIfOutdated(dispatchUser);
     get_User_Fav(user._id, dispatchFav)
   }, [])
 

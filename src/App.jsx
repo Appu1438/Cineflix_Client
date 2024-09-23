@@ -14,9 +14,9 @@ import MyList from './pages/myList/MyList';
 function App() {
   const { user, dispatch } = useContext(AuthContext);
 
-  // useEffect(() => {
-  //   fetchUserDetailsIfOutdated(dispatch);
-  // }, []);
+  useEffect(() => {
+    fetchUserDetailsIfOutdated(dispatch);
+  }, []);
 
   return (
     <Router>

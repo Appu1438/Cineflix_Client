@@ -24,7 +24,7 @@ const List = ({ list }) => {
         // Set a timeout to determine when scrolling has stopped
         scrollTimeout = setTimeout(() => {
             setIsScrolling(false);
-        }, 1000); // Adjust the delay as needed (150ms is a common choice)
+        }, 500); // Adjust the delay as needed (150ms is a common choice)
     };
 
     useEffect(() => {
