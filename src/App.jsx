@@ -9,6 +9,7 @@ import { AuthContext } from "./context/authContext/AuthContext";
 import { ToastContainer } from 'react-toastify';
 import axiosInstance from './api/axiosInstance';
 import { fetchUserDetailsIfOutdated } from './context/authContext/apiCalls';
+import MyList from './pages/myList/MyList';
 
 function App() {
   const { user, dispatch } = useContext(AuthContext);
@@ -27,6 +28,7 @@ function App() {
             <Route path='/movies' element={<Home type={'movie'} />} />
             <Route path='/series' element={<Home type={'series'} />} />
             <Route path='/watch' element={<Watch />} />
+            <Route path='/profile' element={<MyList />} />
 
           </>
         ) : (
