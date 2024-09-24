@@ -11,6 +11,8 @@ import axiosInstance from '../../api/axiosInstance';
 import { add_User_Fav, get_User_Fav, remove_User_Fav } from '../../context/favContext/apiCalls';
 import { AuthContext } from '../../context/authContext/AuthContext';
 import { FavContext } from '../../context/favContext/FavContext';
+import { add_User_WatchLater, remove_User_WatchLater } from '../../context/watchLaterContext/apiCalls';
+import { WatchLaterContext } from '../../context/watchLaterContext/WatchLaterContext';
 
 export default function ListItem({ index, item, scrolled }) {
     const [isHovered, setIsHovered] = useState(false);
@@ -19,7 +21,8 @@ export default function ListItem({ index, item, scrolled }) {
     const hoverRef = useRef();
 
     const { user } = useContext(AuthContext)
-    const { fav, dispatch } = useContext(FavContext)
+    const { fav, dispatch: dispatchFav } = useContext(FavContext)
+    const { watch, dispatch: dispatchWatchLater } = useContext(WatchLaterContext)
 
     useEffect(() => {
         if (isHovered && hoverRef.current) {
@@ -63,10 +66,19 @@ export default function ListItem({ index, item, scrolled }) {
     const handleFav = async () => {
         if (fav?.content?.includes(movie._id)) {
             // Remove from favorites if already added
-            remove_User_Fav({ userId: user._id, movieId: movie._id }, dispatch);
+            remove_User_Fav({ userId: user._id, movieId: movie._id }, dispatchFav);
         } else {
             // Add to favorites if not added
-            add_User_Fav({ userId: user._id, movieId: movie._id }, dispatch);
+            add_User_Fav({ userId: user._id, movieId: movie._id }, dispatchFav);
+        }
+    };
+    const handleWatchLater = async () => {
+        if (watch?.content?.includes(movie._id)) {
+            // Remove from favorites if already added
+            remove_User_WatchLater({ userId: user._id, movieId: movie._id }, dispatchWatchLater);
+        } else {
+            // Add to favorites if not added
+            add_User_WatchLater({ userId: user._id, movieId: movie._id }, dispatchWatchLater);
         }
     };
 
@@ -85,19 +97,34 @@ export default function ListItem({ index, item, scrolled }) {
                     <video src={movie.trailer} autoPlay loop controls />
                     <div className="itemInfo">
                         <div className="icons">
-                            <Link to="/watch" state={{ movie }} className='link'>
-                                <PlayArrow className='icon' />
+                            <Link to="/watch" state={{ movie }} className="link">
+                                <div className="iconContainer">
+                                    <PlayArrow className="icon" />
+                                    <span className="iconLabel">Play</span>
+                                </div>
                             </Link>
-                            <div onClick={handleFav}>
-                                {fav?.content?.includes(movie._id) ? (
-                                    <FavoriteBorder className="icon hovered" />
-                                ) : (
-                                    <FavoriteBorder className="icon" />
-                                )}
+
+                            <div className="iconContainer" onClick={handleWatchLater}>
+                                <Add className={watch?.content?.includes(movie._id) ? "icon hovered" : "icon "} />
+                                <span className="iconLabel">Watch Later</span>
                             </div>
-                            <ThumbUpAltOutlined className='icon' />
-                            <ThumbDownOutlined className='icon' />
+
+                            <div className="iconContainer" onClick={handleFav}>
+                                <FavoriteBorder className={fav?.content?.includes(movie._id) ? "icon hovered" : "icon"} />
+                                <span className="iconLabel">Favorite</span>
+                            </div>
+
+                            <div className="iconContainer">
+                                <ThumbUpAltOutlined className="icon" />
+                                <span className="iconLabel">Like</span>
+                            </div>
+
+                            <div className="iconContainer">
+                                <ThumbDownOutlined className="icon" />
+                                <span className="iconLabel">Dislike</span>
+                            </div>
                         </div>
+
                         <div className="itemInfoTop">
                             <span>{movie.duration}</span>
                             <span className='limit'>+{movie.limit}</span>

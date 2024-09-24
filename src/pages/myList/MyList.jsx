@@ -7,19 +7,26 @@ import { get_User_Fav } from '../../context/favContext/apiCalls';
 import Navbar from '../../components/navbar/Navbar';
 import { get_User_History } from '../../context/historyContext/apiCalls';
 import { HistoryContext } from '../../context/historyContext/HistoryContext';
+import { WatchLaterContext } from '../../context/watchLaterContext/WatchLaterContext';
+import { get_User_WatchLater } from '../../context/watchLaterContext/apiCalls';
 
 export default function MyList() {
     const { user } = useContext(AuthContext);
-    const { fav, dispatch } = useContext(FavContext);
+    const { fav, dispatch: dispatchFav } = useContext(FavContext);
     const { history, dispatch: dispatchHistory } = useContext(HistoryContext);
+    const { watch, dispatch: dispatchWatchLater } = useContext(WatchLaterContext);
 
     useEffect(() => {
-        get_User_Fav(user._id, dispatch);
-    }, [dispatch, user._id]);
+        get_User_Fav(user._id, dispatchFav);
+    }, [dispatchFav, user._id]);
 
     useEffect(() => {
         get_User_History(user._id, dispatchHistory);
     }, [dispatchHistory, user._id]);
+
+    useEffect(() => {
+        get_User_WatchLater(user._id, dispatchWatchLater);
+    }, [dispatchWatchLater, user._id]);
 
     const handleEdit = () => {
         // Define what happens when edit button is clicked (e.g., open a modal or navigate to an edit profile page)
@@ -49,6 +56,8 @@ export default function MyList() {
                 (<List list={fav} />) : (null)}
             {history?.content?.length > 0 ?
                 (<List list={history} />) : (null)}
+            {watch?.content?.length > 0 ?
+                (<List list={watch} />) : (null)}
         </div>
     );
 }
