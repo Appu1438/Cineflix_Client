@@ -13,6 +13,8 @@ import { AuthContext } from '../../context/authContext/AuthContext';
 import { FavContext } from '../../context/favContext/FavContext';
 import { add_User_WatchLater, remove_User_WatchLater } from '../../context/watchLaterContext/apiCalls';
 import { WatchLaterContext } from '../../context/watchLaterContext/WatchLaterContext';
+import { add_User_Likes, remove_User_Likes } from '../../context/likesContext/apiCalls';
+import { LikesContext } from '../../context/likesContext/LikesContext';
 
 export default function ListItem({ index, item, scrolled }) {
     const [isHovered, setIsHovered] = useState(false);
@@ -23,6 +25,7 @@ export default function ListItem({ index, item, scrolled }) {
     const { user } = useContext(AuthContext)
     const { fav, dispatch: dispatchFav } = useContext(FavContext)
     const { watch, dispatch: dispatchWatchLater } = useContext(WatchLaterContext)
+    const { likes, dispatch: dispatcLikes } = useContext(LikesContext)
 
     useEffect(() => {
         if (isHovered && hoverRef.current) {
@@ -72,6 +75,7 @@ export default function ListItem({ index, item, scrolled }) {
             add_User_Fav({ userId: user._id, movieId: movie._id }, dispatchFav);
         }
     };
+
     const handleWatchLater = async () => {
         if (watch?.content?.includes(movie._id)) {
             // Remove from favorites if already added
@@ -81,6 +85,13 @@ export default function ListItem({ index, item, scrolled }) {
             add_User_WatchLater({ userId: user._id, movieId: movie._id }, dispatchWatchLater);
         }
     };
+
+    const handleLike = async () => {
+        add_User_Likes({ userId: user._id, movieId: movie._id }, dispatcLikes)
+    }
+    const handleDisLike = async () => {
+        remove_User_Likes({ userId: user._id, movieId: movie._id }, dispatcLikes)
+    }
 
     return (
         <div
@@ -114,13 +125,13 @@ export default function ListItem({ index, item, scrolled }) {
                                 <span className="iconLabel">Favorite</span>
                             </div>
 
-                            <div className="iconContainer">
-                                <ThumbUpAltOutlined className="icon" />
+                            <div className="iconContainer" onClick={handleLike}>
+                                <ThumbUpAltOutlined className={likes?.likes?.content?.includes(movie._id) ? "icon hovered" : "icon"} />
                                 <span className="iconLabel">Like</span>
                             </div>
 
-                            <div className="iconContainer">
-                                <ThumbDownOutlined className="icon" />
+                            <div className="iconContainer" onClick={handleDisLike}>
+                                <ThumbDownOutlined className={likes?.dislikes?.content?.includes(movie._id) ? "icon hovered" : "icon"} />
                                 <span className="iconLabel">Dislike</span>
                             </div>
                         </div>

@@ -11,6 +11,8 @@ import { FavContext } from '../../context/favContext/FavContext';
 import { fetchUserDetailsIfOutdated } from '../../context/authContext/apiCalls';
 import { get_User_WatchLater } from '../../context/watchLaterContext/apiCalls';
 import { WatchLaterContext } from '../../context/watchLaterContext/WatchLaterContext';
+import { LikesContext } from '../../context/likesContext/LikesContext';
+import { get_User_Likes } from '../../context/likesContext/apiCalls';
 
 export default function Home({ type }) {
   const [lists, setLists] = useState([]);
@@ -19,6 +21,7 @@ export default function Home({ type }) {
   const { user, dispatch: dispatchUser } = useContext(AuthContext)
   const { dispatch: dispatchFav } = useContext(FavContext)
   const { dispatch: dispatchWatchLater } = useContext(WatchLaterContext)
+  const { dispatch: dispatchLikes } = useContext(LikesContext)
 
   useEffect(() => {
     const url = `lists/find${type ? "/?type=" + type : ""}${type && genre ? "&genre=" + genre : ""}`;
@@ -48,6 +51,10 @@ export default function Home({ type }) {
   useEffect(() => {
     get_User_WatchLater(user._id, dispatchWatchLater)
   }, [user,dispatchWatchLater])
+
+  useEffect(() => {
+    get_User_Likes(user._id, dispatchLikes)
+  }, [user,dispatchLikes])
 
   return (
     <div className='home'>

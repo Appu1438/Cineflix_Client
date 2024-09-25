@@ -9,12 +9,15 @@ import { get_User_History } from '../../context/historyContext/apiCalls';
 import { HistoryContext } from '../../context/historyContext/HistoryContext';
 import { WatchLaterContext } from '../../context/watchLaterContext/WatchLaterContext';
 import { get_User_WatchLater } from '../../context/watchLaterContext/apiCalls';
+import { LikesContext } from '../../context/likesContext/LikesContext';
+import { get_User_Likes } from '../../context/likesContext/apiCalls';
 
 export default function MyList() {
     const { user } = useContext(AuthContext);
     const { fav, dispatch: dispatchFav } = useContext(FavContext);
     const { history, dispatch: dispatchHistory } = useContext(HistoryContext);
     const { watch, dispatch: dispatchWatchLater } = useContext(WatchLaterContext);
+    const { likes, dispatch: dispatchLikes } = useContext(LikesContext);
 
     useEffect(() => {
         get_User_Fav(user._id, dispatchFav);
@@ -27,6 +30,10 @@ export default function MyList() {
     useEffect(() => {
         get_User_WatchLater(user._id, dispatchWatchLater);
     }, [dispatchWatchLater, user._id]);
+
+    useEffect(() => {
+        get_User_Likes(user._id, dispatchLikes);
+    }, [dispatchLikes, user._id]);
 
     const handleEdit = () => {
         // Define what happens when edit button is clicked (e.g., open a modal or navigate to an edit profile page)
@@ -52,12 +59,18 @@ export default function MyList() {
                 {/* Edit Button */}
                 <button className="edit-button" onClick={handleEdit}>Edit Profile</button>
             </div>
+            
             {fav?.content?.length > 0 ?
                 (<List list={fav} />) : (null)}
             {history?.content?.length > 0 ?
                 (<List list={history} />) : (null)}
             {watch?.content?.length > 0 ?
                 (<List list={watch} />) : (null)}
+            {likes?.likes?.content?.length > 0 ?
+                (<List list={likes.likes} />) : (null)}
+            {likes?.dislikes?.content?.length > 0 ?
+                (<List list={likes.dislikes} />) : (null)}
+
         </div>
     );
 }
