@@ -37,18 +37,7 @@
         left: 0;
     }
 
-    &:hover {
-        // position: absolute ;
-        width: 360px;
-        max-height: 350px;
-        --webkit-box-shadow: 0px 2px 1px 0px rgba(255, 255, 255, 0.2);
-        box-shadow: 0px 2px 15px 0px rgba(255, 255, 255, 0.2);
-        z-index: 10;
-
-        img {
-            height: 140px;
-        }
-    }
+   
 
     .itemInfo {
         display: flex;
@@ -144,7 +133,18 @@
 
 
 }
+.hover {
+    // position: absolute ;
+    width: 360px;
+    max-height: 350px;
+    --webkit-box-shadow: 0px 2px 1px 0px rgba(255, 255, 255, 0.2);
+    box-shadow: 0px 2px 15px 0px rgba(255, 255, 255, 0.2);
+    z-index: 10;
 
+    img {
+        height: 140px;
+    }
+}
 @keyframes pop-up {
     0% {
         transform: scale(1);

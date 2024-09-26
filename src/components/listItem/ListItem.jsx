@@ -92,7 +92,7 @@ export default function ListItem({ index, item, scrolled }) {
             }
         }
     };
-    
+
     const handleWatchLater = async () => {
         if (watch?.content?.includes(movie._id)) {
             // Remove from Watch Later if already added
@@ -116,7 +116,7 @@ export default function ListItem({ index, item, scrolled }) {
             }
         }
     };
-    
+
 
     const handleLike = async () => {
         add_User_Likes({ userId: user._id, movieId: movie._id }, dispatcLikes)
@@ -127,7 +127,7 @@ export default function ListItem({ index, item, scrolled }) {
 
     return (
         <div
-            className='listItem'
+            className={isHovered && !scrolled ? 'listItem hover' : 'listItem'}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
             ref={hoverRef}
