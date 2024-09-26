@@ -52,7 +52,7 @@ export const refresh = async () => {
     try {
         console.log('Attempting to refresh token');
         // Request a new access token and updated user details using the refresh token
-        const response = await axios.post('http://localhost:3001/api/auth/refresh', { refreshToken: user.refreshToken });
+        const response = await axios.post('http://localhost:5000/api/auth/refresh', { refreshToken: user.refreshToken });
         // Destructure accessToken, refreshToken, and the rest of the user data
         const { accessToken } = response.data;
         const updatedUser = { ...user, accessToken };

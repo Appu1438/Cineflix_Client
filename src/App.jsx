@@ -15,6 +15,7 @@ function App() {
   const { user, dispatch } = useContext(AuthContext);
 
   useEffect(() => {
+    console.log(process.env.REACT_APP_API_URL)
     fetchUserDetailsIfOutdated(dispatch);
   }, []);
 

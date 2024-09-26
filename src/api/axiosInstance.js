@@ -5,7 +5,7 @@ const storedUser = JSON.parse(localStorage.getItem('user'));
 
 // Create an Axios instance
 const axiosInstance = axios.create({
-    baseURL: 'http://localhost:3001/api/', // Set the base URL
+    baseURL: process.env.REACT_APP_API_URL, // Set the base URL
     headers: {
         'Content-Type': 'application/json', // Set common headers
     },
