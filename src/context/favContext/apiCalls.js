@@ -19,6 +19,8 @@ export const add_User_Fav = async (data, dispatch) => {
         const response = await axiosInstance.post(`users/fav/add`, data)
         console.log(response.data)
         dispatch(addFavSuccess(response.data))
+        return response
+
     } catch (error) {
         dispatch(addFavFailure())
         console.log(error)
@@ -34,8 +36,10 @@ export const remove_User_Fav = async (data, dispatch) => {
                 movieId: data.movieId,
             },
         });
-         console.log(response.data)
+        console.log(response.data)
         dispatch(removeFavSuccess(response.data))
+        return response
+
     } catch (error) {
         dispatch(removeFavFailure())
         console.log(error)

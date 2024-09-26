@@ -19,6 +19,7 @@ export const add_User_WatchLater = async (data, dispatch) => {
         const response = await axiosInstance.post(`users/watch/add`, data)
         console.log(response.data)
         dispatch(addWatchLaterSuccess(response.data))
+        return response
     } catch (error) {
         dispatch(addWatchLaterFailure())
         console.log(error)
@@ -36,6 +37,7 @@ export const remove_User_WatchLater = async (data, dispatch) => {
         });
         console.log(response.data)
         dispatch(removeWatchLaterSuccess(response.data))
+        return response
     } catch (error) {
         dispatch(removeWatchLaterFailure())
         console.log(error)

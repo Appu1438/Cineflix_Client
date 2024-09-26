@@ -20,7 +20,7 @@ function App() {
 
   return (
     <Router>
-      <ToastContainer position="top-right" autoClose={5000} />
+      <ToastContainer position="top-right" autoClose={2000} />
       <Routes>
         <Route path='/' element={user ? <Home type={null} /> : <Navigate to={'/login'} />} />
         {user ? (
