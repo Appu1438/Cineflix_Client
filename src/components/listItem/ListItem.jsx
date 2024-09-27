@@ -1,5 +1,6 @@
 import './listItem.scss'
 import PlayArrow from '@mui/icons-material/PlayArrow';
+import Info from '@mui/icons-material/Info';
 import Add from '@mui/icons-material/Add';
 import ThumbUpAltOutlined from '@mui/icons-material/ThumbUpAltOutlined';
 import ThumbDownOutlined from '@mui/icons-material/ThumbDownOutlined';
@@ -144,6 +145,12 @@ export default function ListItem({ index, item, scrolled }) {
                                 <div className="iconContainer">
                                     <PlayArrow className="icon" />
                                     <span className="iconLabel">Play</span>
+                                </div>
+                            </Link>
+                            <Link to="/info" state={{ id: movie._id }} className="link">
+                                <div className="iconContainer">
+                                    <Info className="icon" />
+                                    <span className="iconLabel">Info</span>
                                 </div>
                             </Link>
 

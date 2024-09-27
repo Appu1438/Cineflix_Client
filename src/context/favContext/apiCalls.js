@@ -16,7 +16,7 @@ export const add_User_Fav = async (data, dispatch) => {
     console.log(data)
     dispatch(addFavStart())
     try {
-        const response = await axiosInstance.post(`users/fav/add`, data)
+        const response = await axiosInstance.post(`users/fav/${data.userId}`, data)
         console.log(response.data)
         dispatch(addFavSuccess(response.data))
         return response
@@ -30,9 +30,8 @@ export const remove_User_Fav = async (data, dispatch) => {
     console.log(data)
     dispatch(removeFavStart())
     try {
-        const response = await axiosInstance.delete(`users/fav/delete`, {
+        const response = await axiosInstance.delete(`users/fav/${data.userId}`, {
             params: {
-                userId: data.userId,
                 movieId: data.movieId,
             },
         });

@@ -38,7 +38,6 @@ const Navbar = () => {
                     <Link to={'/series'} className='link'>
                         <span>Series</span>
                     </Link>
-                    <span>New and Popular</span>
                     <Link to={'/profile'} className='link'>
                     <span>My List</span>
                     </Link>

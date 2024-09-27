@@ -15,7 +15,7 @@ export const get_User_History = async (id, dispatch) => {
 export const add_User_History = async (data, dispatch) => {
     dispatch(addHistoryStart())
     try {
-        const response = await axiosInstance.post(`users/history/add`, data)
+        const response = await axiosInstance.post(`users/history/${data.userId}`, data)
         console.log(response.data)
         dispatch(addHistorySuccess(response.data))
     } catch (error) {

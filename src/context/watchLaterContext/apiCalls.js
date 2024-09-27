@@ -16,7 +16,7 @@ export const add_User_WatchLater = async (data, dispatch) => {
     console.log(data)
     dispatch(addWatchLaterStart())
     try {
-        const response = await axiosInstance.post(`users/watch/add`, data)
+        const response = await axiosInstance.post(`users/watch/${data.userId}`, data)
         console.log(response.data)
         dispatch(addWatchLaterSuccess(response.data))
         return response
@@ -29,9 +29,8 @@ export const remove_User_WatchLater = async (data, dispatch) => {
     console.log(data)
     dispatch(removeWatchLaterStart())
     try {
-        const response = await axiosInstance.delete(`users/watch/delete`, {
+        const response = await axiosInstance.delete(`users/watch/${data.userId}`, {
             params: {
-                userId: data.userId,
                 movieId: data.movieId,
             },
         });

@@ -17,7 +17,7 @@ export const add_User_Likes = async (data, dispatch) => {
     console.log(data)
     dispatch(addLikesStart())
     try {
-        const response = await axiosInstance.post(`movies/likes/add`, data)
+        const response = await axiosInstance.post(`movies/likes/${data.userId}`, data)
         console.log(response.data)
         dispatch(addLikesSuccess(response.data))
     } catch (error) {
@@ -29,9 +29,8 @@ export const remove_User_Likes = async (data, dispatch) => {
     console.log(data)
     dispatch(removeLikesStart())
     try {
-        const response = await axiosInstance.delete(`movies/likes/delete`, {
+        const response = await axiosInstance.delete(`movies/likes/${data.userId}`, {
             params: {
-                userId: data.userId,
                 movieId: data.movieId,
             }
         },)
