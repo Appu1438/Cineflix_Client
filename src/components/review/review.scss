@@ -1,0 +1,71 @@
+.reviewItem {
+    background-color: #3a3a3a;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+
+    .reviewHeader {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+
+        strong {
+            font-size: 1.2rem;
+            color: #f39c12;
+        }
+
+        .reviewStar {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+
+            .deleteBtn {
+                align-self: flex-end;
+                background-color: #e50914;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                padding: 8px 16px;
+                cursor: pointer;
+                font-size: 0.9rem;
+                font-weight: bold;
+                position: absolute;
+                top: 20px;
+                transition: background-color 0.3s;
+                margin-top: 10px;
+
+                &:hover {
+                    background-color: #d40813;
+                }
+            }
+        }
+    }
+
+    p {
+        font-size: 1rem;
+        color: #ddd;
+        line-height: 1.5;
+    }
+
+   
+
+}
+.showMoreBtn,
+.closeBtn {
+    padding: 10px 15px;
+    background-color: #e50914;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 15px;
+    font-size: 1rem;
+    margin: 5px;
+}
+
+.showMoreBtn:hover,
+.closeBtn:hover {
+    background-color: #d40813;
+}

@@ -6,7 +6,8 @@ import {
     Add,
     FavoriteBorder,
     ThumbUpAltOutlined,
-    ThumbDownOutlined
+    ThumbDownOutlined,
+    Delete
 } from '@mui/icons-material';
 import { AuthContext } from '../../context/authContext/AuthContext';
 import { FavContext } from '../../context/favContext/FavContext';
@@ -20,6 +21,10 @@ import StarRatingComponent from 'react-star-rating-component';
 import axiosInstance from '../../api/axiosInstance';
 import Spinner from '../../components/spinner/Spinner';
 import { formatCount } from '../../utils/formatCount';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+import { ReviewsComponent } from '../../components/review/Review';
+
 
 const MovieInfo = () => {
     const location = useLocation();
@@ -33,6 +38,9 @@ const MovieInfo = () => {
     const [reviews, setReviews] = useState([]);
     const [newReview, setNewReview] = useState('');
     const [rating, setRating] = useState(0);
+
+    const MySwal = withReactContent(Swal);
+
 
     // Fetch user-specific data
     useEffect(() => {
@@ -69,7 +77,7 @@ const MovieInfo = () => {
         return () => {
             controller.abort();
         };
-    }, [id, fav, likes]);
+    }, [id, fav, likes, reviews]);
 
     // Fetch reviews for the movie
     useEffect(() => {
@@ -136,13 +144,13 @@ const MovieInfo = () => {
             toast.error('Review cannot be empty!');
             return;
         }
-    
+
         // Check if the rating is selected
         if (rating === 0) { // Assuming rating is initialized to 0 when no selection is made
             toast.error('Please select a rating!');
             return;
         }
-    
+
         try {
             const response = await axiosInstance.post(`movies/review/${movie._id}`, {
                 userId: user._id,
@@ -158,7 +166,49 @@ const MovieInfo = () => {
             toast.error('Failed to add review!');
         }
     };
-    
+
+    //Handle deleting review
+
+    const handleDltReview = async (id) => {
+        if (!id) {
+            toast.error('Review Not Found');
+            return;
+        }
+
+        // SweetAlert2 confirmation dialog
+        MySwal.fire({
+            title: 'Are you sure?',
+            text: "Do you really want to delete this review? This action cannot be undone.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#e50914',
+            cancelButtonColor: '#555',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const response = await axiosInstance.delete(`movies/review/${movie._id}`, {
+                        params: {
+                            reviewId: id
+                        }
+                    });
+
+                    if (response.status === 200) {
+                        toast.success('Review deleted successfully');
+                        // Optionally update the UI by removing the deleted review from the local state
+                        setReviews(prevReviews => prevReviews.filter(review => review._id !== id));
+                    } else {
+                        toast.error('Failed to delete the review');
+                    }
+                } catch (error) {
+                    console.error(error);
+                    toast.error('An error occurred while deleting the review');
+                }
+            }
+        });
+    };
+
 
     return (
         <div className="movieInfoContainer">
@@ -217,6 +267,7 @@ const MovieInfo = () => {
                                     editing={false}
                                     starColor="#FFD700"
                                     emptyStarColor="#CCCCCC"
+                                    className='starRatingInput'
                                 />
                             </div>
                         </div>
@@ -224,40 +275,9 @@ const MovieInfo = () => {
 
                     {/* Reviews Section */}
                     <div className="reviewsSection">
-                    <h2>Reviews {movie.reviewcount !== undefined ? `(${formatCount(movie.reviewcount)})` : ""}</h2>
-                    {reviews.length ? (
-                            reviews.map((review, index) => (
-                                <div key={index} className="reviewItem">
-                                    <div className="reviewHeader">
-                                    <strong>{review.userName}</strong>
-                                    <StarRatingComponent
-                                            name={`rating-${index}`}
-                                            starCount={5}
-                                            value={review.rating}
-                                            editing={false}
-                                            starColor="#FFD700"
-                                            emptyStarColor="#CCCCCC"
-                                        />
-                                    </div>
-                                    <p>{review.review}</p>
-                                </div>
-                            ))
-                        ) : (
-                            <div  className="reviewItem">
-                                    <div className="reviewHeader">
-                                        <strong>No Reviews Yet...</strong>
-                                        <StarRatingComponent
-                                            starCount={5}
-                                            value={0}
-                                            editing={false}
-                                            starColor="#FFD700"
-                                            emptyStarColor="#CCCCCC"
-                                        />
-                                    </div>
-                                    <p>Be the first one to review</p>
-                                </div>
-                        )}
-
+                        <h2>Reviews {movie.reviewcount !== undefined ? `(${formatCount(movie.reviewcount)})` : ""}</h2>
+                        <ReviewsComponent movie={movie} reviews={reviews} user={user} setReviews={setReviews} />
+                      
                         <div className="addReview">
                             <h3>Add Your Review</h3>
                             <StarRatingComponent
@@ -267,6 +287,7 @@ const MovieInfo = () => {
                                 onStarClick={onStarClick}
                                 starColor="#FFD700"
                                 emptyStarColor="#CCCCCC"
+                                className="starRatingInput"
                             />
                             <textarea
                                 value={newReview}
@@ -275,6 +296,7 @@ const MovieInfo = () => {
                             />
                             <button onClick={handleAddReview}>Submit Review</button>
                         </div>
+
                     </div>
                 </>
             ) : (
