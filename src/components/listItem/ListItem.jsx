@@ -17,6 +17,8 @@ import { add_User_WatchLater, remove_User_WatchLater } from '../../context/watch
 import { WatchLaterContext } from '../../context/watchLaterContext/WatchLaterContext';
 import { add_User_Likes, remove_User_Likes } from '../../context/likesContext/apiCalls';
 import { LikesContext } from '../../context/likesContext/LikesContext';
+import { formatCount } from '../../utils/formatCount';
+import StarComponent from '../starComponent/StarComponent';
 
 export default function ListItem({ index, item, scrolled }) {
     const [isHovered, setIsHovered] = useState(false);
@@ -162,20 +164,24 @@ export default function ListItem({ index, item, scrolled }) {
                             <div className="iconContainer" onClick={handleFav}>
                                 <FavoriteBorder className={fav?.content?.includes(movie._id) ? "icon hovered" : "icon"} />
                                 <span className="iconLabel">Favorite</span>
-                                {/* <span className="iconLabel">{movie.favCount}</span> */}
+                                <span className="iconCount">{movie.favCount ? formatCount(movie.favCount) : ""}</span>
                             </div>
 
                             <div className="iconContainer" onClick={handleLike}>
                                 <ThumbUpAltOutlined className={likes?.likes?.content?.includes(movie._id) ? "icon hovered" : "icon"} />
                                 <span className="iconLabel">Like</span>
-                                {/* <span className="iconLabel">{movie.likes}</span> */}
+                                <span className="iconCount">{movie.likes ? formatCount(movie.likes) : ""}</span>
                             </div>
 
                             <div className="iconContainer" onClick={handleDisLike}>
                                 <ThumbDownOutlined className={likes?.dislikes?.content?.includes(movie._id) ? "icon hovered" : "icon"} />
                                 <span className="iconLabel">Dislike</span>
-                                {/* <span className="iconLabel">{movie.dislikes}</span> */}
+                                <span className="iconCount">{movie.dislikes ? formatCount(movie.dislikes) : ""}</span>
                             </div>
+                        </div>
+                        <div className="ratingContainer">
+                            <h4>Rating :</h4><StarComponent rating={movie?.average} />
+
                         </div>
 
                         <div className="itemInfoTop">

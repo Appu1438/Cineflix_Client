@@ -6,6 +6,7 @@ import withReactContent from 'sweetalert2-react-content';
 import { toast } from 'react-toastify';
 import StarRatingComponent from 'react-star-rating-component';
 import { Delete } from '@mui/icons-material';
+import StarComponent from '../starComponent/StarComponent';
 
 export const ReviewsComponent = ({ movie, reviews, user, setReviews }) => {
     // State to track how many reviews to display at first (default is 3)
@@ -68,14 +69,7 @@ export const ReviewsComponent = ({ movie, reviews, user, setReviews }) => {
             <div className="reviewItem">
                 <div className="reviewHeader">
                     <strong>No Reviews Yet...</strong>
-                    <StarRatingComponent
-                        starCount={5}
-                        value={0}
-                        editing={false}
-                        starColor="#FFD700"
-                        emptyStarColor="#CCCCCC"
-                        className=""
-                    />
+                    <StarComponent rating={0}/>
                 </div>
                 <p>Be the first one to review</p>
             </div>
@@ -89,15 +83,8 @@ export const ReviewsComponent = ({ movie, reviews, user, setReviews }) => {
                     <div className="reviewHeader">
                         <strong>{review.userName}</strong>
                         <div className="reviewStar">
-                            <StarRatingComponent
-                                name={`rating-${index}`}
-                                starCount={5}
-                                value={review.rating}
-                                editing={false}
-                                starColor="#FFD700"
-                                emptyStarColor="#CCCCCC"
-                                className="starRatingInput"
-                            />
+                            <StarComponent rating={review.rating}/>
+                            
                             {/* Show delete button if the user is the reviewer */}
                             {review.userId === user._id && (
                                 <Delete className="deleteBtn" onClick={() => handleDltReview(review._id)} />

@@ -37,7 +37,7 @@
         left: 0;
     }
 
-   
+
 
     .itemInfo {
         display: flex;
@@ -47,7 +47,8 @@
 
         .icons {
             display: flex;
-            margin-bottom: 10px;
+            // margin-bottom: 10px;
+            gap: 10px;
 
             .iconContainer {
                 position: relative;
@@ -56,11 +57,13 @@
                 align-items: center;
                 cursor: pointer;
 
+
+
                 .icon {
                     border: 2px solid white;
                     padding: 8px;
                     border-radius: 50%;
-                    margin-right: 10px;
+                    // margin-right: 10px;
                     font-size: 18px;
                     transition: background-color 0.3s ease, color 0.3s ease;
                 }
@@ -90,9 +93,43 @@
                 &:hover .iconLabel {
                     opacity: 1;
                 }
+
+                .iconCount {
+                    font-size: 10px;
+                    margin-top: 5px;
+                }
+
             }
 
+
         }
+
+        .ratingContainer {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 5px;
+            margin-bottom: 10px;
+            /* Adjust this based on how it looks in the layout */
+            font-size: 14px;
+            /* Increase if needed */
+            color: lightgray;
+            /* Use a lighter color to contrast well with the background */
+
+            .starIcon {
+                color: #ffcc00;
+                /* Gold or yellow for star ratings */
+                font-size: 18px;
+            }
+
+            .ratingValue {
+                margin-left: 5px;
+                font-weight: bold;
+                font-size: 15px;
+                /* Adjust to make it more prominent */
+            }
+        }
+
 
 
 
@@ -133,6 +170,7 @@
 
 
 }
+
 .hover {
     // position: absolute ;
     width: 360px;
@@ -145,6 +183,7 @@
         height: 140px;
     }
 }
+
 @keyframes pop-up {
     0% {
         transform: scale(1);

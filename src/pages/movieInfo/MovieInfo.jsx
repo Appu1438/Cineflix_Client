@@ -24,6 +24,7 @@ import { formatCount } from '../../utils/formatCount';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { ReviewsComponent } from '../../components/review/Review';
+import StarComponent from '../../components/starComponent/StarComponent';
 
 
 const MovieInfo = () => {
@@ -259,16 +260,8 @@ const MovieInfo = () => {
                             </div>
 
                             <div className="averageRating">
-                                <h4>Average Rating: {movie.average.toFixed(1)}/5</h4>
-                                <StarRatingComponent
-                                    name="averageRating"
-                                    starCount={5}
-                                    value={movie.average}
-                                    editing={false}
-                                    starColor="#FFD700"
-                                    emptyStarColor="#CCCCCC"
-                                    className='starRatingInput'
-                                />
+                                <h4>Rating: {movie.average.toFixed(1)}/5</h4>
+                                <StarComponent rating={movie.average}/>
                             </div>
                         </div>
                     </div>
