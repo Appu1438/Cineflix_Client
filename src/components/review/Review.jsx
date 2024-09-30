@@ -1,26 +1,25 @@
 import { useState } from 'react';
-import './review.scss'
+import './review.scss';
 import axiosInstance from '../../api/axiosInstance';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { toast } from 'react-toastify';
 import StarRatingComponent from 'react-star-rating-component';
-import {
-    Delete
-} from '@mui/icons-material';
+import { Delete } from '@mui/icons-material';
+
 export const ReviewsComponent = ({ movie, reviews, user, setReviews }) => {
-    // State to track how many reviews to display at first (default is 5)
-    const [visibleReviews, setVisibleReviews] = useState(1);
+    // State to track how many reviews to display at first (default is 3)
+    const [visibleReviews, setVisibleReviews] = useState(3);
     const MySwal = withReactContent(Swal);
 
     // Show more reviews by increasing the number of visible reviews
     const handleShowMore = () => {
-        setVisibleReviews(prev => prev + 5);
+        setVisibleReviews(prev => prev + 3);
     };
 
-    // Reset the reviews to only show the first 5
+    // Reset the reviews to only show the first 3
     const handleClose = () => {
-        setVisibleReviews(1);
+        setVisibleReviews(3);
     };
 
     const handleDltReview = async (id) => {
@@ -50,7 +49,7 @@ export const ReviewsComponent = ({ movie, reviews, user, setReviews }) => {
 
                     if (response.status === 200) {
                         toast.success('Review deleted successfully');
-                        // Optionally update the UI by removing the deleted review from the local state
+                        // Update the UI by removing the deleted review from the local state
                         setReviews(prevReviews => prevReviews.filter(review => review._id !== id));
                     } else {
                         toast.error('Failed to delete the review');
@@ -63,6 +62,7 @@ export const ReviewsComponent = ({ movie, reviews, user, setReviews }) => {
         });
     };
 
+    // Conditional rendering for no reviews
     if (reviews.length === 0) {
         return (
             <div className="reviewItem">
@@ -115,8 +115,8 @@ export const ReviewsComponent = ({ movie, reviews, user, setReviews }) => {
                 </button>
             )}
 
-            {/* Show Close button if more than 5 reviews are visible */}
-            {visibleReviews > 5 && (
+            {/* Show Close button if more than the initial count of reviews are visible */}
+            {visibleReviews > 3 && (
                 <button className="closeBtn" onClick={handleClose}>
                     Close
                 </button>
