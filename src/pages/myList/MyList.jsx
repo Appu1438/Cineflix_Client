@@ -40,6 +40,14 @@ export default function MyList() {
         console.log('Edit button clicked!');
     };
 
+     // Scroll to top
+     useEffect(() => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth' // This enables smooth scrolling
+        });
+    }, []);
+
     return (
         <div className="my-list">
             <Navbar />

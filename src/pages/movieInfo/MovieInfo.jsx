@@ -56,6 +56,14 @@ const MovieInfo = () => {
         get_User_Likes(user._id, dispatchLikes);
     }, [dispatchLikes, user._id]);
 
+     // Scroll to top
+     useEffect(() => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth' // This enables smooth scrolling
+        });
+    }, [id]);
+
     // Fetch movie details
     useEffect(() => {
         const controller = new AbortController();

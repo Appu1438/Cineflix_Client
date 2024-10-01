@@ -47,11 +47,6 @@ const Watch = () => {
 
     const MySwal = withReactContent(Swal);
 
-    //History
-    useEffect(() => {
-        add_User_History({ userId: user._id, movieId: movie?._id }, dispatch)
-    }, [dispatch, user?._id, movie?._id])
-
     // Fetch user-specific data
     useEffect(() => {
         get_User_Fav(user._id, dispatchFav);
@@ -64,6 +59,14 @@ const Watch = () => {
     useEffect(() => {
         get_User_Likes(user._id, dispatchLikes);
     }, [dispatchLikes, user._id]);
+
+    // Scroll to top
+    useEffect(() => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth' // This enables smooth scrolling
+        });
+    }, [id]);
 
     // Fetch movie details
     useEffect(() => {
@@ -135,6 +138,11 @@ const Watch = () => {
 
         fetchRelatedMovies();
     }, [id, movie]);
+
+    //History
+    useEffect(() => {
+        add_User_History({ userId: user._id, movieId: movie?._id }, dispatch)
+    }, [dispatch, user?._id, movie?._id])
 
 
     // Handle adding/removing from favorites
