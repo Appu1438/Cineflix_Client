@@ -1,0 +1,39 @@
+
+.recommendedMoviesContainer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    margin: 20px 0;
+
+    .recommendedMovieCard {
+        position: relative;
+        margin: 10px;
+        width: 350px; // Adjust width as needed
+        overflow: hidden;
+
+        .movieImageContainer {
+            position: relative;
+            cursor: pointer;
+
+            .movieImage {
+                width: 100%;
+                height: 225px;
+                transition: transform 0.3s ease;
+                object-fit: cover;
+            }
+
+            &:hover {
+                .movieImage {
+                    transform: scale(1.05);
+                }
+            }
+        }
+
+        .movieTitle {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 1.1rem;
+            color: #fff;
+        }
+    }
+}

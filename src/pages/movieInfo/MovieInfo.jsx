@@ -82,18 +82,29 @@ const MovieInfo = () => {
 
     // Fetch reviews for the movie
     useEffect(() => {
-        if (!movie?._id) return;
-
+        if (!id) return; // Check if movie ID is available and if reviews are already fetched
+    
+        const controller = new AbortController();
+        const { signal } = controller;
+    
         const fetchReviews = async () => {
             try {
-                const response = await axiosInstance.get(`movies/review/${movie._id}`);
-                setReviews(response.data);
+                const response = await axiosInstance.get(`movies/review/${id}`, { signal });
+                if (response.data && response.data.length > 0) {
+                    setReviews(response.data);
+                }
             } catch (error) {
                 console.error('Failed to fetch reviews:', error);
             }
         };
+    
         fetchReviews();
-    }, [movie]);
+    
+        return () => {
+            controller.abort();
+        };
+    }, [id]);
+    
 
     // Handle adding/removing from favorites
     const handleFav = async () => {
@@ -168,47 +179,6 @@ const MovieInfo = () => {
         }
     };
 
-    //Handle deleting review
-
-    const handleDltReview = async (id) => {
-        if (!id) {
-            toast.error('Review Not Found');
-            return;
-        }
-
-        // SweetAlert2 confirmation dialog
-        MySwal.fire({
-            title: 'Are you sure?',
-            text: "Do you really want to delete this review? This action cannot be undone.",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#e50914',
-            cancelButtonColor: '#555',
-            confirmButtonText: 'Yes, delete it!',
-            cancelButtonText: 'Cancel'
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                try {
-                    const response = await axiosInstance.delete(`movies/review/${movie._id}`, {
-                        params: {
-                            reviewId: id
-                        }
-                    });
-
-                    if (response.status === 200) {
-                        toast.success('Review deleted successfully');
-                        // Optionally update the UI by removing the deleted review from the local state
-                        setReviews(prevReviews => prevReviews.filter(review => review._id !== id));
-                    } else {
-                        toast.error('Failed to delete the review');
-                    }
-                } catch (error) {
-                    console.error(error);
-                    toast.error('An error occurred while deleting the review');
-                }
-            }
-        });
-    };
 
 
     return (
@@ -228,7 +198,7 @@ const MovieInfo = () => {
                             <h1>{movie.title}</h1>
                             <p>{movie.desc}</p>
                             <div className="icons">
-                                <Link to="/watch" state={{ movie }} className="link">
+                                <Link to="/watch" state={{ id: movie._id }} className="link">
                                     <div className="iconContainer">
                                         <PlayArrow className="icon" />
                                         <span className="iconLabel">Play</span>
@@ -261,7 +231,7 @@ const MovieInfo = () => {
 
                             <div className="averageRating">
                                 <h4>Rating: {movie.average.toFixed(1)}/5</h4>
-                                <StarComponent rating={movie.average}/>
+                                <StarComponent rating={movie.average} />
                             </div>
                         </div>
                     </div>
@@ -270,7 +240,7 @@ const MovieInfo = () => {
                     <div className="reviewsSection">
                         <h2>Reviews {movie.reviewcount !== undefined ? `(${formatCount(movie.reviewcount)})` : ""}</h2>
                         <ReviewsComponent movie={movie} reviews={reviews} user={user} setReviews={setReviews} />
-                      
+
                         <div className="addReview">
                             <h3>Add Your Review</h3>
                             <StarRatingComponent

@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import axiosInstance from '../../api/axiosInstance';
 import { fetchGenres } from '../../api/fetchGenres';
 import { Link } from 'react-router-dom';
-import Spinner  from '../spinner/Spinner'
+import Spinner from '../spinner/Spinner'
 const Featured = ({ type, setGenre }) => {
   const [genres, setGenres] = useState([]);
   const [content, setContent] = useState([]);
@@ -74,16 +74,19 @@ const Featured = ({ type, setGenre }) => {
                 <img src={slide.imgTitle} alt="Info" />
                 <span className="desc">{slide.desc}</span>
                 <div className="buttons">
-                  <Link to="/watch" state={{ movie: slide }} className='link'>
+                  <Link to="/watch" state={{ id: slide._id }} className="link">
                     <button className="play">
                       <PlayArrow className='icon' />
                       <span>Play</span>
                     </button>
                   </Link>
-                  <button className="more">
-                    <InfoOutlined />
-                    <span>Info</span>
-                  </button>
+                  <Link to="/info" state={{ id: slide._id }} className="link">
+                    <button className="more">
+                      <InfoOutlined />
+                      <span>Info</span>
+                    </button>
+                  </Link>
+
                 </div>
               </div>
             </div>
