@@ -262,6 +262,17 @@
 
     }
 
+    .recommendedMovies {
+        margin-top: 40px;
+
+        h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+    }
+
     /* Spinner Styles */
     .spinnerContainer {
         display: flex;

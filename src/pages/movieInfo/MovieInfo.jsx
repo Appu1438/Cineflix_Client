@@ -25,11 +25,12 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { ReviewsComponent } from '../../components/review/Review';
 import StarComponent from '../../components/starComponent/StarComponent';
+import RecommendedMovies from '../../components/recommendMovies/RecommendMovies';
 
 
 const MovieInfo = () => {
     const location = useLocation();
-    const id = location.state.id;
+    const [id, setId] = useState(location.state.id)
     const { user } = useContext(AuthContext);
     const { fav, dispatch: dispatchFav } = useContext(FavContext);
     const { watch, dispatch: dispatchWatchLater } = useContext(WatchLaterContext);
@@ -39,6 +40,7 @@ const MovieInfo = () => {
     const [reviews, setReviews] = useState([]);
     const [newReview, setNewReview] = useState('');
     const [rating, setRating] = useState(0);
+    const [relatedMovies, setRelatedMovies] = useState(null);
 
     const MySwal = withReactContent(Swal);
 
@@ -56,13 +58,13 @@ const MovieInfo = () => {
         get_User_Likes(user._id, dispatchLikes);
     }, [dispatchLikes, user._id]);
 
-     // Scroll to top
-     useEffect(() => {
+    // Scroll to top
+    useEffect(() => {
         window.scrollTo({
             top: 0,
             behavior: 'smooth' // This enables smooth scrolling
         });
-    }, [id]);
+    }, [id,reviews]);
 
     // Fetch movie details
     useEffect(() => {
@@ -91,28 +93,44 @@ const MovieInfo = () => {
     // Fetch reviews for the movie
     useEffect(() => {
         if (!id) return; // Check if movie ID is available and if reviews are already fetched
-    
+
         const controller = new AbortController();
         const { signal } = controller;
-    
+
         const fetchReviews = async () => {
             try {
                 const response = await axiosInstance.get(`movies/review/${id}`, { signal });
-                if (response.data && response.data.length > 0) {
                     setReviews(response.data);
-                }
             } catch (error) {
                 console.error('Failed to fetch reviews:', error);
             }
         };
-    
+
         fetchReviews();
-    
+
         return () => {
             controller.abort();
         };
     }, [id]);
-    
+
+    useEffect(() => {
+        const fetchRelatedMovies = async () => {
+            try {
+                console.log('related')
+                const movieResponse = await axiosInstance.get(`movies/find/${id}`);
+                const movieData = movieResponse.data;
+                const response = await axiosInstance.get(`movies/related/${movieData.genre}`);
+                console.log(response.data)
+                setRelatedMovies(response.data);
+
+            } catch (error) {
+                console.error('Failed to fetch related movies:', error);
+            }
+        };
+
+        fetchRelatedMovies();
+    }, [id]);
+
 
     // Handle adding/removing from favorites
     const handleFav = async () => {
@@ -178,7 +196,7 @@ const MovieInfo = () => {
                 review: newReview,
                 rating
             });
-            setReviews((prev) => [...prev, response.data.review]);
+            setReviews((prev) => [response.data.review, ...prev]);
             setNewReview('');
             setRating(0);
             toast.success('Review added!');
@@ -269,6 +287,15 @@ const MovieInfo = () => {
                         </div>
 
                     </div>
+
+
+                    {relatedMovies && (
+                        <div className="recommendedMovies">
+                            <h2>Recommended Movies</h2>
+                            <RecommendedMovies movies={relatedMovies} state={setId} />
+                        </div>
+                    )}
+
                 </>
             ) : (
                 <Spinner />

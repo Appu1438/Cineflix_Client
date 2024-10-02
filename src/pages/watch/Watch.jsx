@@ -32,7 +32,7 @@ import ListItem from '../../components/listItem/ListItem';
 
 const Watch = () => {
     const location = useLocation();
-    const id = location.state.id;
+    const [id, setId] = useState(location.state.id)
     const { user } = useContext(AuthContext);
     const { dispatch } = useContext(HistoryContext)
     const { fav, dispatch: dispatchFav } = useContext(FavContext);
@@ -66,7 +66,7 @@ const Watch = () => {
             top: 0,
             behavior: 'smooth' // This enables smooth scrolling
         });
-    }, [id]);
+    }, [id,reviews]);
 
     // Fetch movie details
     useEffect(() => {
@@ -102,10 +102,7 @@ const Watch = () => {
         const fetchReviews = async () => {
             try {
                 const response = await axiosInstance.get(`movies/review/${id}`, { signal });
-                if (response.data && response.data.length > 0) {
-                    setReviews(response.data);
-
-                }
+                setReviews(response.data);
             } catch (error) {
                 console.error('Failed to fetch reviews:', error);
             }
@@ -121,14 +118,13 @@ const Watch = () => {
 
     //fetch related movies
     useEffect(() => {
-        if (!movie?.genre) return; // Check if genre is available and if related movies are already fetched
-
-
         const fetchRelatedMovies = async () => {
             try {
                 console.log('related')
-                // const movie = await axiosInstance.get(`movies/find/${id}`)
-                const response = await axiosInstance.get(`movies/related/${movie.genre}`);
+                const movieResponse = await axiosInstance.get(`movies/find/${id}`);
+                const movieData = movieResponse.data; 
+                const response = await axiosInstance.get(`movies/related/${movieData.genre}`);
+                console.log(response.data)
                 setRelatedMovies(response.data);
 
             } catch (error) {
@@ -137,7 +133,7 @@ const Watch = () => {
         };
 
         fetchRelatedMovies();
-    }, [id, movie]);
+    }, [id]);
 
     //History
     useEffect(() => {
@@ -209,7 +205,7 @@ const Watch = () => {
                 review: newReview,
                 rating
             });
-            setReviews((prev) => [...prev, response.data.review]);
+            setReviews((prev) => [response.data.review, ...prev]);
             setNewReview('');
             setRating(0);
             toast.success('Review added!');
@@ -299,7 +295,7 @@ const Watch = () => {
                     {relatedMovies && (
                         <div className="recommendedMovies">
                             <h2>Recommended Movies</h2>
-                            <RecommendedMovies movies={relatedMovies} />
+                            <RecommendedMovies movies={relatedMovies} state={setId} />
                         </div>
 
                     )}

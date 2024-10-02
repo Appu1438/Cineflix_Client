@@ -14,6 +14,10 @@ export const get_User_History = async (id, dispatch) => {
 }
 export const add_User_History = async (data, dispatch) => {
     dispatch(addHistoryStart())
+    if (!data.movieId) {
+        dispatch(addHistoryFailure())
+        return;
+    }
     try {
         const response = await axiosInstance.post(`users/history/${data.userId}`, data)
         console.log(response.data)
