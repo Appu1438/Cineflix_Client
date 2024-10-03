@@ -143,13 +143,13 @@ export default function ListItem({ index, item, scrolled }) {
                     <video src={movie.trailer} autoPlay loop controls />
                     <div className="itemInfo">
                         <div className="icons">
-                            <Link to="/watch" state={{ id:movie._id }} className="link">
+                            <Link to={`/watch/${movie._id}`} className="link">
                                 <div className="iconContainer">
                                     <PlayArrow className="icon" />
                                     <span className="iconLabel">Play</span>
                                 </div>
                             </Link>
-                            <Link to="/info" state={{ id: movie._id }} className="link">
+                            <Link to={`/info/${movie._id}`} className="link">
                                 <div className="iconContainer">
                                     <Info className="icon" />
                                     <span className="iconLabel">Info</span>

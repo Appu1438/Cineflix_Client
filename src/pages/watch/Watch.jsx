@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import './watch.scss';
 import {
     PlayArrow,
@@ -32,7 +32,7 @@ import ListItem from '../../components/listItem/ListItem';
 
 const Watch = () => {
     const location = useLocation();
-    const [id, setId] = useState(location.state.id)
+    const { id } = useParams()
     const { user } = useContext(AuthContext);
     const { dispatch } = useContext(HistoryContext)
     const { fav, dispatch: dispatchFav } = useContext(FavContext);
@@ -66,7 +66,7 @@ const Watch = () => {
             top: 0,
             behavior: 'smooth' // This enables smooth scrolling
         });
-    }, [id,reviews]);
+    }, [id, reviews]);
 
     // Fetch movie details
     useEffect(() => {
@@ -122,7 +122,7 @@ const Watch = () => {
             try {
                 console.log('related')
                 const movieResponse = await axiosInstance.get(`movies/find/${id}`);
-                const movieData = movieResponse.data; 
+                const movieData = movieResponse.data;
                 const response = await axiosInstance.get(`movies/related/${movieData.genre}`);
                 console.log(response.data)
                 setRelatedMovies(response.data);
@@ -225,10 +225,10 @@ const Watch = () => {
                                 <iframe className="trailerVideo" src={movie.video} title="Movie Trailer" allowFullScreen></iframe>
                             </div>
                             <div className="details">
-                                <h1>{movie.title}</h1>
+                                <h1>Watch : {movie.title}</h1>
                                 <p>{movie.desc}</p>
                                 <div className="icons">
-                                    <Link to="/info" state={{ id: movie._id }} className="link">
+                                    <Link to={`/info/${movie._id}`} className="link">
                                         <div className="iconContainer">
                                             <Info className="icon" />
                                             <span className="iconLabel">Info</span>
@@ -295,7 +295,7 @@ const Watch = () => {
                     {relatedMovies && (
                         <div className="recommendedMovies">
                             <h2>Recommended Movies</h2>
-                            <RecommendedMovies movies={relatedMovies} state={setId} />
+                            <RecommendedMovies movies={relatedMovies} />
                         </div>
 
                     )}

@@ -74,13 +74,13 @@ const Featured = ({ type, setGenre }) => {
                 <img src={slide.imgTitle} alt="Info" />
                 <span className="desc">{slide.desc}</span>
                 <div className="buttons">
-                  <Link to="/watch" state={{ id: slide._id }} className="link">
+                  <Link to={`/watch/${slide._id}`} className="link">
                     <button className="play">
                       <PlayArrow className='icon' />
                       <span>Play</span>
                     </button>
                   </Link>
-                  <Link to="/info" state={{ id: slide._id }} className="link">
+                  <Link to={`/info/${slide._id}`} className="link">
                     <button className="more">
                       <InfoOutlined />
                       <span>Info</span>

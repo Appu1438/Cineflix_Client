@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import './movieInfo.scss';
 import {
     PlayArrow,
@@ -30,7 +30,8 @@ import RecommendedMovies from '../../components/recommendMovies/RecommendMovies'
 
 const MovieInfo = () => {
     const location = useLocation();
-    const [id, setId] = useState(location.state.id)
+    // const [id, setId] = useState(location.state.id)
+    const { id } = useParams();
     const { user } = useContext(AuthContext);
     const { fav, dispatch: dispatchFav } = useContext(FavContext);
     const { watch, dispatch: dispatchWatchLater } = useContext(WatchLaterContext);
@@ -64,7 +65,7 @@ const MovieInfo = () => {
             top: 0,
             behavior: 'smooth' // This enables smooth scrolling
         });
-    }, [id,reviews]);
+    }, [id, reviews]);
 
     // Fetch movie details
     useEffect(() => {
@@ -100,7 +101,7 @@ const MovieInfo = () => {
         const fetchReviews = async () => {
             try {
                 const response = await axiosInstance.get(`movies/review/${id}`, { signal });
-                    setReviews(response.data);
+                setReviews(response.data);
             } catch (error) {
                 console.error('Failed to fetch reviews:', error);
             }
@@ -224,7 +225,7 @@ const MovieInfo = () => {
                             <h1>{movie.title}</h1>
                             <p>{movie.desc}</p>
                             <div className="icons">
-                                <Link to="/watch" state={{ id: movie._id }} className="link">
+                                <Link to={`/watch/${movie._id}`} className="link">
                                     <div className="iconContainer">
                                         <PlayArrow className="icon" />
                                         <span className="iconLabel">Play</span>
@@ -292,7 +293,7 @@ const MovieInfo = () => {
                     {relatedMovies && (
                         <div className="recommendedMovies">
                             <h2>Recommended Movies</h2>
-                            <RecommendedMovies movies={relatedMovies} state={setId} />
+                            <RecommendedMovies movies={relatedMovies} />
                         </div>
                     )}
 

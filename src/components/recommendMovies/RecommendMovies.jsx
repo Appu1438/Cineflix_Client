@@ -1,11 +1,16 @@
 import React from 'react';
 import './recommendMovies.scss';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-const RecommendedMovies = ({ movies, state }) => {
+const RecommendedMovies = ({ movies }) => {
+    const location = useLocation();
+    const navigate = useNavigate();
 
     const handleChange = (id) => {
-        state(id);
-    }
+        // Determine the navigation path based on the current location
+        const newPath = location.pathname.includes('/info') ? `/info/${id}` : `/watch/${id}`;
+        navigate(newPath);
+    };
 
     return (
         <div className="recommendedMoviesContainer">

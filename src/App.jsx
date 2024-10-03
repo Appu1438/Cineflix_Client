@@ -29,8 +29,8 @@ function App() {
           <>
             <Route path='/movies' element={<Home type={'movie'} />} />
             <Route path='/series' element={<Home type={'series'} />} />
-            <Route path='/watch' element={<Watch />} />
-            <Route path='/info' element={<MovieInfo />} />
+            <Route path='/watch/:id' element={<Watch />} />
+            <Route path='/info/:id' element={<MovieInfo />} />
             <Route path='/profile' element={<MyList />} />
 
           </>
