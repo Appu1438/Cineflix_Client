@@ -39,8 +39,7 @@ const MovieInfo = () => {
 
     const [movie, setMovie] = useState(null);
     const [reviews, setReviews] = useState([]);
-    const [newReview, setNewReview] = useState('');
-    const [rating, setRating] = useState(0);
+
 
     const MySwal = withReactContent(Swal);
 
@@ -90,31 +89,6 @@ const MovieInfo = () => {
         };
     }, [id, fav, likes, reviews]);
 
-    // Fetch reviews for the movie
-    useEffect(() => {
-        if (!id) return; // Check if movie ID is available and if reviews are already fetched
-
-        const controller = new AbortController();
-        const { signal } = controller;
-
-        const fetchReviews = async () => {
-            try {
-                const response = await axiosInstance.get(`movies/review/${id}`, { signal });
-                setReviews(response.data);
-            } catch (error) {
-                console.error('Failed to fetch reviews:', error);
-            }
-        };
-
-        fetchReviews();
-
-        return () => {
-            controller.abort();
-        };
-    }, [id]);
-
-
-
     // Handle adding/removing from favorites
     const handleFav = async () => {
         try {
@@ -153,41 +127,6 @@ const MovieInfo = () => {
     const handleDislike = async () => {
         remove_User_Likes({ userId: user._id, movieId: movie._id }, dispatchLikes);
     };
-
-    // Handle star rating for new review
-    const onStarClick = (nextValue) => {
-        setRating(nextValue);
-    };
-
-    // Handle adding a new review
-    const handleAddReview = async () => {
-        if (!newReview.trim()) {
-            toast.error('Review cannot be empty!');
-            return;
-        }
-
-        // Check if the rating is selected
-        if (rating === 0) { // Assuming rating is initialized to 0 when no selection is made
-            toast.error('Please select a rating!');
-            return;
-        }
-
-        try {
-            const response = await axiosInstance.post(`movies/review/${movie._id}`, {
-                userId: user._id,
-                userName: user.username,
-                review: newReview,
-                rating
-            });
-            setReviews((prev) => [response.data.review, ...prev]);
-            setNewReview('');
-            setRating(0);
-            toast.success('Review added!');
-        } catch (error) {
-            toast.error('Failed to add review!');
-        }
-    };
-
 
 
     return (
@@ -249,30 +188,10 @@ const MovieInfo = () => {
                     {/* Reviews Section */}
                     <div className="reviewsSection">
                         <h2>Reviews {movie.reviewcount !== undefined ? `(${formatCount(movie.reviewcount)})` : ""}</h2>
-                        <ReviewsComponent movie={movie} reviews={reviews} user={user} setReviews={setReviews} />
-
-                        <div className="addReview">
-                            <h3>Add Your Review</h3>
-                            <StarRatingComponent
-                                name="rateMovie"
-                                starCount={5}
-                                value={rating}
-                                onStarClick={onStarClick}
-                                starColor="#FFD700"
-                                emptyStarColor="#CCCCCC"
-                                className="starRatingInput"
-                            />
-                            <textarea
-                                value={newReview}
-                                onChange={(e) => setNewReview(e.target.value)}
-                                placeholder="Write your review here..."
-                            />
-                            <button onClick={handleAddReview}>Submit Review</button>
-                        </div>
-
+                        <ReviewsComponent id={id} user={user} reviews={reviews} setReviews={setReviews} />
                     </div>
 
-
+                    {/* Recomendation section*/}
                     {movie && (
                         <div className="recommendedMovies">
                             <h2>Recommended Movies</h2>

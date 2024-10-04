@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './review.scss';
 import axiosInstance from '../../api/axiosInstance';
 import Swal from 'sweetalert2';
@@ -7,8 +7,12 @@ import { toast } from 'react-toastify';
 import StarComponent from '../starComponent/StarComponent';
 import { Delete } from '@mui/icons-material';
 import { format } from 'date-fns';
+import StarRatingComponent from 'react-star-rating-component';
 
-export const ReviewsComponent = ({ movie, reviews, user, setReviews }) => {
+export const ReviewsComponent = ({ id, user, reviews, setReviews }) => {
+
+    const [newReview, setNewReview] = useState('');
+    const [rating, setRating] = useState(0);
     const [visibleReviews, setVisibleReviews] = useState(3);
     const MySwal = withReactContent(Swal);
 
@@ -19,7 +23,62 @@ export const ReviewsComponent = ({ movie, reviews, user, setReviews }) => {
     const handleClose = () => {
         setVisibleReviews(3);
     };
+    // Fetch reviews for the movie
+    useEffect(() => {
+        if (!id) return; // Check if movie ID is available and if reviews are already fetched
 
+        const controller = new AbortController();
+        const { signal } = controller;
+
+        const fetchReviews = async () => {
+            try {
+                const response = await axiosInstance.get(`movies/review/${id}`, { signal });
+                setReviews(response.data);
+            } catch (error) {
+                console.error('Failed to fetch reviews:', error);
+            }
+        };
+
+        fetchReviews();
+
+        return () => {
+            controller.abort();
+        };
+    }, [id]);
+
+    // Handle star rating for new review
+    const onStarClick = (nextValue) => {
+        setRating(nextValue);
+    };
+
+    // Handle adding a new review
+    const handleAddReview = async () => {
+        if (!newReview.trim()) {
+            toast.error('Review cannot be empty!');
+            return;
+        }
+
+        // Check if the rating is selected
+        if (rating === 0) { // Assuming rating is initialized to 0 when no selection is made
+            toast.error('Please select a rating!');
+            return;
+        }
+
+        try {
+            const response = await axiosInstance.post(`movies/review/${id}`, {
+                userId: user._id,
+                userName: user.username,
+                review: newReview,
+                rating
+            });
+            setReviews((prev) => [response.data.review, ...prev]);
+            setNewReview('');
+            setRating(0);
+            toast.success('Review added!');
+        } catch (error) {
+            toast.error('Failed to add review!');
+        }
+    };
     const handleDltReview = async (id) => {
         if (!id) {
             toast.error('Review Not Found');
@@ -38,7 +97,7 @@ export const ReviewsComponent = ({ movie, reviews, user, setReviews }) => {
         }).then(async (result) => {
             if (result.isConfirmed) {
                 try {
-                    const response = await axiosInstance.delete(`movies/review/${movie._id}`, {
+                    const response = await axiosInstance.delete(`movies/review/${id}`, {
                         params: {
                             reviewId: id
                         }
@@ -87,7 +146,7 @@ export const ReviewsComponent = ({ movie, reviews, user, setReviews }) => {
                     </div>
                     <p>{review.review}</p>
                     <h4 className="reviewTimestamp">
-                    Reviewed on : {format(new Date(review.createdAt), 'MMMM d , yyyy h:mm a')}
+                        Reviewed on : {format(new Date(review.createdAt), 'MMMM d , yyyy h:mm a')}
                     </h4>
                 </div>
             ))}
@@ -103,6 +162,25 @@ export const ReviewsComponent = ({ movie, reviews, user, setReviews }) => {
                     Close
                 </button>
             )}
+
+            <div className="addReview">
+                <h3>Add Your Review</h3>
+                <StarRatingComponent
+                    name="rateMovie"
+                    starCount={5}
+                    value={rating}
+                    onStarClick={onStarClick}
+                    starColor="#FFD700"
+                    emptyStarColor="#CCCCCC"
+                    className="starRatingInput"
+                />
+                <textarea
+                    value={newReview}
+                    onChange={(e) => setNewReview(e.target.value)}
+                    placeholder="Write your review here..."
+                />
+                <button onClick={handleAddReview}>Submit Review</button>
+            </div>
         </div>
     );
 };
