@@ -29,7 +29,7 @@ import { HistoryContext } from '../../context/historyContext/HistoryContext';
 import { add_User_History } from '../../context/historyContext/apiCalls';
 import RecommendedMovies from '../../components/recommendMovies/RecommendMovies';
 import ListItem from '../../components/listItem/ListItem';
-
+import VideoPlayer from '../../components/video/Video';
 const Watch = () => {
     const location = useLocation();
     const { id } = useParams()
@@ -79,6 +79,7 @@ const Watch = () => {
                 if (id === response.data._id) {
                     setMovie(response.data);
                 }
+
             } catch (error) {
                 if (error.name !== 'CanceledError') {
                     console.error(error);
@@ -222,8 +223,9 @@ const Watch = () => {
                     <div className="detailsReviewsContainer">
                         <div className="movieHeader">
                             <div className="trailer">
-                                <iframe className="trailerVideo" src={movie.video} title="Movie Trailer" allowFullScreen></iframe>
+                                <VideoPlayer videoUrl={movie.video} subtitleUrl={movie.videoSubtitle} />
                             </div>
+
                             <div className="details">
                                 <h1>Watch : {movie.title}</h1>
                                 <p>{movie.desc}</p>

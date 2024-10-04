@@ -26,7 +26,7 @@ import withReactContent from 'sweetalert2-react-content';
 import { ReviewsComponent } from '../../components/review/Review';
 import StarComponent from '../../components/starComponent/StarComponent';
 import RecommendedMovies from '../../components/recommendMovies/RecommendMovies';
-
+import VideoPlayer from '../../components/video/Video';
 
 const MovieInfo = () => {
     const location = useLocation();
@@ -214,12 +214,7 @@ const MovieInfo = () => {
                 <>
                     <div className="movieHeader">
                         <div className="trailer">
-                            <iframe
-                                src={movie.trailer}
-                                title="Movie Trailer"
-                                allow="fullscreen"
-                                className="trailerVideo"
-                            />
+                            <VideoPlayer videoUrl={movie.trailer} subtitleUrl={movie.trailerSubtitle} />
                         </div>
                         <div className="details">
                             <h1>{movie.title}</h1>
