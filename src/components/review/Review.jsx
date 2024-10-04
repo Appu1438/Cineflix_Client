@@ -57,13 +57,13 @@ export const ReviewsComponent = ({ id, user, reviews, setReviews }) => {
             toast.error('Review cannot be empty!');
             return;
         }
-
+    
         // Check if the rating is selected
         if (rating === 0) { // Assuming rating is initialized to 0 when no selection is made
             toast.error('Please select a rating!');
             return;
         }
-
+    
         try {
             const response = await axiosInstance.post(`movies/review/${id}`, {
                 userId: user._id,
@@ -71,14 +71,34 @@ export const ReviewsComponent = ({ id, user, reviews, setReviews }) => {
                 review: newReview,
                 rating
             });
-            setReviews((prev) => [response.data.review, ...prev]);
+    
+            // Check response status for success messages
+            if (response.status === 201) {
+                toast.success('Review added!');
+            } else if (response.status === 200) {
+                toast.success('Review updated!');
+            }
+    
+            // Update the review list and reset fields
+            setReviews((prev) => {
+                if (response.status === 201) {
+                    // If a new review was added, add it to the front
+                    return [response.data.review, ...prev];
+                } else {
+                    // If an existing review was updated, replace it in the list
+                    return prev.map((review) => 
+                        review._id === response.data.review._id ? response.data.review : review
+                    );
+                }
+            });
+    
             setNewReview('');
             setRating(0);
-            toast.success('Review added!');
         } catch (error) {
-            toast.error('Failed to add review!');
+            toast.error('Failed to add/update review!');
         }
     };
+    
     const handleDltReview = async (id) => {
         if (!id) {
             toast.error('Review Not Found');
@@ -117,70 +137,76 @@ export const ReviewsComponent = ({ id, user, reviews, setReviews }) => {
         });
     };
 
-    // If there are no reviews
-    if (reviews.length === 0) {
-        return (
-            <div className="reviewItem">
-                <div className="reviewHeader">
-                    <strong>No Reviews Yet...</strong>
-                    <StarComponent rating={0} />
-                </div>
-                <p>Be the first one to review</p>
-            </div>
-        );
-    }
+
 
     return (
         <div>
-            {reviews.slice(0, visibleReviews).map((review, index) => (
-                <div key={index} className="reviewItem">
-                    <div className="reviewHeader">
-                        <strong>{review.userName}</strong>
-                        <div className="reviewStar">
-                            <StarComponent rating={review.rating} />
-
-                            {review.userId === user._id && (
-                                <Delete className="deleteBtn" onClick={() => handleDltReview(review._id)} />
-                            )}
+            <>
+                {/* Conditionally render "No Reviews Yet..." when reviews array is empty */}
+                {reviews.length === 0 ? (
+                    <div className="reviewItem">
+                        <div className="reviewHeader">
+                            <strong>No Reviews Yet...</strong>
+                            <StarComponent rating={0} />
                         </div>
+                        <p>Be the first one to review</p>
                     </div>
-                    <p>{review.review}</p>
-                    <h4 className="reviewTimestamp">
-                        Reviewed on : {format(new Date(review.createdAt), 'MMMM d , yyyy h:mm a')}
-                    </h4>
+                ) : (
+                    <>
+                        {reviews.slice(0, visibleReviews).map((review, index) => (
+                            <div key={index} className="reviewItem">
+                                <div className="reviewHeader">
+                                    <strong>{review.userName}</strong>
+                                    <div className="reviewStar">
+                                        <StarComponent rating={review.rating} />
+                                        {review.userId === user._id && (
+                                            <Delete className="deleteBtn" onClick={() => handleDltReview(review._id)} />
+                                        )}
+                                    </div>
+                                </div>
+                                <p>{review.review}</p>
+                                <h4 className="reviewTimestamp">
+                                    Reviewed on: {format(new Date(review.createdAt), 'MMMM d, yyyy h:mm a')}
+                                </h4>
+                            </div>
+                        ))}
+
+                        {/* Show "Show More" button if there are more reviews to show */}
+                        {visibleReviews < reviews.length && (
+                            <button className="showMoreBtn" onClick={handleShowMore}>
+                                Show More
+                            </button>
+                        )}
+
+                        {/* Show "Close" button if more than 3 reviews are visible */}
+                        {visibleReviews > 3 && (
+                            <button className="closeBtn" onClick={handleClose}>
+                                Close
+                            </button>
+                        )}
+                    </>
+                )}
+
+                <div className="addReview">
+                    <h3>Add Your Review</h3>
+                    <StarRatingComponent
+                        name="rateMovie"
+                        starCount={5}
+                        value={rating}
+                        onStarClick={onStarClick}
+                        starColor="#FFD700"
+                        emptyStarColor="#CCCCCC"
+                        className="starRatingInput"
+                    />
+                    <textarea
+                        value={newReview}
+                        onChange={(e) => setNewReview(e.target.value)}
+                        placeholder="Submit your review here to Add or Update Your Review"
+                    />
+                    <button onClick={handleAddReview}>Submit Review</button>
                 </div>
-            ))}
-
-            {visibleReviews < reviews.length && (
-                <button className="showMoreBtn" onClick={handleShowMore}>
-                    Show More
-                </button>
-            )}
-
-            {visibleReviews > 3 && (
-                <button className="closeBtn" onClick={handleClose}>
-                    Close
-                </button>
-            )}
-
-            <div className="addReview">
-                <h3>Add Your Review</h3>
-                <StarRatingComponent
-                    name="rateMovie"
-                    starCount={5}
-                    value={rating}
-                    onStarClick={onStarClick}
-                    starColor="#FFD700"
-                    emptyStarColor="#CCCCCC"
-                    className="starRatingInput"
-                />
-                <textarea
-                    value={newReview}
-                    onChange={(e) => setNewReview(e.target.value)}
-                    placeholder="Write your review here..."
-                />
-                <button onClick={handleAddReview}>Submit Review</button>
-            </div>
+            </>
         </div>
     );
+
 };
