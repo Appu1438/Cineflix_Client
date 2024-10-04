@@ -186,7 +186,7 @@ export const ReviewsComponent = ({ id, user, reviews, setReviews }) => {
                                 </div>
                                 <p>{review.review}</p>
                                 <h4 className="reviewTimestamp">
-                                    Reviewed on: {format(new Date(review.createdAt), 'MMMM d, yyyy h:mm a')}
+                                    Reviewed on: {format(new Date(review.updatedAt), 'MMMM d, yyyy h:mm a')}
                                 </h4>
                             </div>
                         ))}

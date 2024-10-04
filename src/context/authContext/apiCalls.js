@@ -3,21 +3,39 @@ import axios from 'axios'
 import { fetchUserFailure, fetchUserStart, fetchUserSuccess, loginFailure, loginStart, loginSuccess } from './AuthAction'
 import axiosInstance from '../../api/axiosInstance'
 
-
 export const login = async (user, dispatch) => {
-    dispatch(loginStart())
+    dispatch(loginStart());
+
     try {
-        const res = await axiosInstance.post(`auth/login`, user)
-        console.log(res)
-        dispatch(loginSuccess(res.data))
+        // Make the login request
+        const res = await axiosInstance.post(`auth/login`, user, { withCredentials: true });
+
+        // Log the response from the server
+        console.log('Login Response:', res);
+
+        // Dispatch success action with user data
+        dispatch(loginSuccess(res.data));
     } catch (error) {
-        dispatch(loginFailure())
+        console.error('Login error:', error); // Log the error details
+        dispatch(loginFailure());
     }
-}
+};
 
 export const logout = async () => {
-    localStorage.removeItem('user'); // Clear user data
-    window.location.href = '/login'; // Redirect to login page
+    try {
+
+        const response = await axiosInstance.post('auth/logout', {}, { withCredentials: true });
+        if (response.status == 200) {
+            localStorage.removeItem('user'); // Clear user data
+            window.location.href = '/login'; // Redirect to login page
+        } else {
+            console.log('Failed to logout')
+        }
+
+    } catch (error) {
+        console.log(error)
+    }
+
 }
 
 
@@ -51,11 +69,11 @@ export const refresh = async () => {
 
     try {
         console.log('Attempting to refresh token');
-        // Request a new access token and updated user details using the refresh token
-        const response = await axios.post('http://localhost:5000/api/auth/refresh', { refreshToken: user.refreshToken });
-        // Destructure accessToken, refreshToken, and the rest of the user data
+        const response = await axios.post('http://localhost:5000/api/auth/refresh', {}, { withCredentials: true });
+
         const { accessToken } = response.data;
         const updatedUser = { ...user, accessToken };
+
         localStorage.setItem('user', JSON.stringify(updatedUser));
         return accessToken;
 

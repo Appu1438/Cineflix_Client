@@ -154,11 +154,11 @@ const Watch = () => {
                                             label: '360P', url: movie.video
                                         },
                                         {
-                                            label: '480P', url: "https://firebasestorage.googleapis.com/v0/b/cineflix-79be6.appspot.com/o/items%2F1725823905055videoplayback%20(4).mp4?alt=media&token=18744a18-a2aa-47da-b61c-d848ccd0a225"
+                                            label: '480P', url: movie.video
                                         },
                                         {
-                                            label: '720P', url: "https://firebasestorage.googleapis.com/v0/b/cineflix-79be6.appspot.com/o/items%2F1725685863201videoplayback%20(1).mp4?alt=media&token=33ff34dc-82f9-4df9-9c3a-1bdaf173d33b"
-                                        }
+                                            label: '720P', url: movie.video
+                                        },
                                     ]}
                                     subtitleUrl={movie.videoSubtitle}
                                 />
