@@ -40,8 +40,8 @@ export default function MyList() {
         console.log('Edit button clicked!');
     };
 
-     // Scroll to top
-     useEffect(() => {
+    // Scroll to top
+    useEffect(() => {
         window.scrollTo({
             top: 0,
             behavior: 'smooth' // This enables smooth scrolling
@@ -53,7 +53,9 @@ export default function MyList() {
             <Navbar />
             <div className="profile-section">
                 <div className="profile-info">
-                    <img src={user.profilePic} alt={user.name} className="profile-avatar" />
+                    <img
+                        src={user.profilePic || "https://images.pexels.com/photos/6899260/pexels-photo-6899260.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"}
+                        alt={user.username} className="profile-avatar" />
                     <h2 className="profile-name">{user.username}</h2>
                     <p className="profile-email">{user.email}</p>
 
@@ -67,7 +69,7 @@ export default function MyList() {
                 {/* Edit Button */}
                 <button className="edit-button" onClick={handleEdit}>Edit Profile</button>
             </div>
-            
+
             {fav?.content?.length > 0 ?
                 (<List list={fav} />) : (null)}
             {history?.content?.length > 0 ?

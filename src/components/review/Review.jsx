@@ -25,26 +25,46 @@ export const ReviewsComponent = ({ id, user, reviews, setReviews }) => {
     };
     // Fetch reviews for the movie
     useEffect(() => {
-        if (!id) return; // Check if movie ID is available and if reviews are already fetched
-
+        if (!id) return; // Check if movie ID is available
+    
         const controller = new AbortController();
         const { signal } = controller;
-
+    
         const fetchReviews = async () => {
             try {
                 const response = await axiosInstance.get(`movies/review/${id}`, { signal });
-                setReviews(response.data);
+                const fetchedReviews = response.data;
+    
+                // Check if the current user has an existing review
+                const currentUserReview = fetchedReviews.find(review => review.userId === user._id);
+    
+                // If the current user's review is found, move it to the top
+                if (currentUserReview) {
+                    // Filter out the current user's review and add it to the front
+                    const otherReviews = fetchedReviews.filter(review => review.userId !== user._id);
+                    const updatedReviews = [currentUserReview, ...otherReviews];
+    
+                    setReviews(updatedReviews); // Set the new order of reviews
+                    setNewReview(currentUserReview.review); // Set the current user's review for editing
+                    setRating(currentUserReview.rating); // Set the current user's rating for editing
+                } else {
+                    // If no review exists, just set the reviews
+                    setReviews(fetchedReviews);
+                    setNewReview(''); // Reset fields
+                    setRating(0);
+                }
             } catch (error) {
                 console.error('Failed to fetch reviews:', error);
             }
         };
-
+    
         fetchReviews();
-
+    
         return () => {
             controller.abort();
         };
-    }, [id]);
+    }, [id, user._id]); // Added user._id as a dependency to ensure it re-runs if the user changes
+    
 
     // Handle star rating for new review
     const onStarClick = (nextValue) => {
@@ -57,13 +77,13 @@ export const ReviewsComponent = ({ id, user, reviews, setReviews }) => {
             toast.error('Review cannot be empty!');
             return;
         }
-    
+
         // Check if the rating is selected
         if (rating === 0) { // Assuming rating is initialized to 0 when no selection is made
             toast.error('Please select a rating!');
             return;
         }
-    
+
         try {
             const response = await axiosInstance.post(`movies/review/${id}`, {
                 userId: user._id,
@@ -71,14 +91,14 @@ export const ReviewsComponent = ({ id, user, reviews, setReviews }) => {
                 review: newReview,
                 rating
             });
-    
+
             // Check response status for success messages
             if (response.status === 201) {
                 toast.success('Review added!');
             } else if (response.status === 200) {
                 toast.success('Review updated!');
             }
-    
+
             // Update the review list and reset fields
             setReviews((prev) => {
                 if (response.status === 201) {
@@ -86,19 +106,19 @@ export const ReviewsComponent = ({ id, user, reviews, setReviews }) => {
                     return [response.data.review, ...prev];
                 } else {
                     // If an existing review was updated, replace it in the list
-                    return prev.map((review) => 
+                    return prev.map((review) =>
                         review._id === response.data.review._id ? response.data.review : review
                     );
                 }
             });
-    
+
             setNewReview('');
             setRating(0);
         } catch (error) {
             toast.error('Failed to add/update review!');
         }
     };
-    
+
     const handleDltReview = async (id) => {
         if (!id) {
             toast.error('Review Not Found');
@@ -159,9 +179,9 @@ export const ReviewsComponent = ({ id, user, reviews, setReviews }) => {
                                     <strong>{review.userName}</strong>
                                     <div className="reviewStar">
                                         <StarComponent rating={review.rating} />
-                                        {review.userId === user._id && (
+                                        {review.userId === user._id || user.isAdmin ? (
                                             <Delete className="deleteBtn" onClick={() => handleDltReview(review._id)} />
-                                        )}
+                                        ) : (null)}
                                     </div>
                                 </div>
                                 <p>{review.review}</p>
