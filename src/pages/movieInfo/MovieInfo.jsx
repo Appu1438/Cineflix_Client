@@ -41,7 +41,6 @@ const MovieInfo = () => {
     const [reviews, setReviews] = useState([]);
     const [newReview, setNewReview] = useState('');
     const [rating, setRating] = useState(0);
-    const [relatedMovies, setRelatedMovies] = useState(null);
 
     const MySwal = withReactContent(Swal);
 
@@ -114,23 +113,6 @@ const MovieInfo = () => {
         };
     }, [id]);
 
-    useEffect(() => {
-        const fetchRelatedMovies = async () => {
-            try {
-                console.log('related')
-                const movieResponse = await axiosInstance.get(`movies/find/${id}`);
-                const movieData = movieResponse.data;
-                const response = await axiosInstance.get(`movies/related/${movieData.genre}`);
-                console.log(response.data)
-                setRelatedMovies(response.data);
-
-            } catch (error) {
-                console.error('Failed to fetch related movies:', error);
-            }
-        };
-
-        fetchRelatedMovies();
-    }, [id]);
 
 
     // Handle adding/removing from favorites
@@ -214,7 +196,13 @@ const MovieInfo = () => {
                 <>
                     <div className="movieHeader">
                         <div className="trailer">
-                            <VideoPlayer videoUrl={movie.trailer} subtitleUrl={movie.trailerSubtitle} />
+                            <VideoPlayer
+                                key={movie._id}
+                                videoQualities={[
+                                    { label: '360P', url: movie.trailer },
+                                    { label: '480P', url: movie.trailer },
+                                    { label: '720P', url: movie.trailer }
+                                ]} subtitleUrl={movie.trailerSubtitle} />
                         </div>
                         <div className="details">
                             <h1>{movie.title}</h1>
@@ -285,10 +273,10 @@ const MovieInfo = () => {
                     </div>
 
 
-                    {relatedMovies && (
+                    {movie && (
                         <div className="recommendedMovies">
                             <h2>Recommended Movies</h2>
-                            <RecommendedMovies movies={relatedMovies} />
+                            <RecommendedMovies movieId={id} />
                         </div>
                     )}
 

@@ -41,7 +41,6 @@ const Watch = () => {
 
     const [movie, setMovie] = useState(null);
     const [reviews, setReviews] = useState([]);
-    const [relatedMovies, setRelatedMovies] = useState(null);
     const [newReview, setNewReview] = useState('');
     const [rating, setRating] = useState(0);
 
@@ -116,25 +115,6 @@ const Watch = () => {
         };
     }, [id]);
 
-
-    //fetch related movies
-    useEffect(() => {
-        const fetchRelatedMovies = async () => {
-            try {
-                console.log('related')
-                const movieResponse = await axiosInstance.get(`movies/find/${id}`);
-                const movieData = movieResponse.data;
-                const response = await axiosInstance.get(`movies/related/${movieData.genre}`);
-                console.log(response.data)
-                setRelatedMovies(response.data);
-
-            } catch (error) {
-                console.error('Failed to fetch related movies:', error);
-            }
-        };
-
-        fetchRelatedMovies();
-    }, [id]);
 
     //History
     useEffect(() => {
@@ -223,12 +203,27 @@ const Watch = () => {
                     <div className="detailsReviewsContainer">
                         <div className="movieHeader">
                             <div className="trailer">
-                                <VideoPlayer videoUrl={movie.video} subtitleUrl={movie.videoSubtitle} />
+                                <VideoPlayer
+                                    key={movie._id}
+                                    videoQualities={[
+                                        {
+                                            label: '360P', url: movie.video
+                                        },
+                                        {
+                                            label: '480P', url: "https://firebasestorage.googleapis.com/v0/b/cineflix-79be6.appspot.com/o/items%2F1725823905055videoplayback%20(4).mp4?alt=media&token=18744a18-a2aa-47da-b61c-d848ccd0a225"
+                                        },
+                                        {
+                                            label: '720P', url: "https://firebasestorage.googleapis.com/v0/b/cineflix-79be6.appspot.com/o/items%2F1725685863201videoplayback%20(1).mp4?alt=media&token=33ff34dc-82f9-4df9-9c3a-1bdaf173d33b"
+                                        }
+                                    ]}
+                                    subtitleUrl={movie.videoSubtitle}
+                                />
                             </div>
 
                             <div className="details">
                                 <h1>Watch : {movie.title}</h1>
                                 <p>{movie.desc}</p>
+                                <p>{movie.genre.join(' ,  ')}</p>
                                 <div className="icons">
                                     <Link to={`/info/${movie._id}`} className="link">
                                         <div className="iconContainer">
@@ -294,10 +289,10 @@ const Watch = () => {
                         </div>
                     </div>
 
-                    {relatedMovies && (
+                    {movie && (
                         <div className="recommendedMovies">
                             <h2>Recommended Movies</h2>
-                            <RecommendedMovies movies={relatedMovies} />
+                            <RecommendedMovies movieId={id} />
                         </div>
 
                     )}
