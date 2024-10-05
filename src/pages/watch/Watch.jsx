@@ -149,17 +149,7 @@ const Watch = () => {
                             <div className="trailer">
                                 <VideoPlayer
                                     key={movie._id}
-                                    videoQualities={[
-                                        {
-                                            label: '360P', url: movie.video
-                                        },
-                                        {
-                                            label: '480P', url: movie.video
-                                        },
-                                        {
-                                            label: '720P', url: movie.video
-                                        },
-                                    ]}
+                                    videoUrl={movie.video}
                                     subtitleUrl={movie.videoSubtitle}
                                 />
                             </div>

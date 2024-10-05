@@ -1,10 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './video.scss';
+import axiosInstance from '../../api/axiosInstance';
 
-const VideoPlayer = ({ videoQualities, subtitleUrl }) => {
+const VideoPlayer = ({ videoUrl, subtitleUrl }) => {
     const videoRef = useRef(null);
     const subtitleRef = useRef(null);
-    const [currentQuality, setCurrentQuality] = useState(videoQualities ? videoQualities[0] : '');
+    const [videoStream, setVideoStream] = useState();
+    const [currentQuality, setCurrentQuality] = useState();
     const [showQualityOptions, setShowQualityOptions] = useState(false); // State to control visibility of quality options
     const overlayRef = useRef(null); // Ref for the overlay
 
@@ -29,11 +31,44 @@ const VideoPlayer = ({ videoQualities, subtitleUrl }) => {
     }, [subtitleUrl]);
 
     useEffect(() => {
-        if (videoRef.current) {
-            videoRef.current.src = currentQuality.url;
+        const fetchVideoUrl = async () => {
+            try {
+                const response = await axiosInstance.get(`movies/stream-video`, {
+                    params: {
+                        filename: videoUrl // Ensure this is the correct filename
+                    },
+                    headers: {
+                        'Range': 'bytes=0-' // Request the first 1000 bytes (for example)
+                    },
+                    responseType: 'blob' // Important to set the response type
+                });
+
+                // Create a URL for the video blob and play it
+                const videoBlob = new Blob([response.data], { type: 'video/mp4' });
+                const videoUrlBlob = URL.createObjectURL(videoBlob);
+
+
+                // Ensure that the response contains the video URL
+                console.log('Video Stream URL:', response);
+                console.log('Blob', videoUrlBlob)
+                setVideoStream(videoUrlBlob); // Set the video stream URL
+            } catch (error) {
+                console.error('Error fetching video URL:', error);
+            }
+        };
+
+        fetchVideoUrl();
+    }, [videoUrl]); // Use videoFilename as a dependency
+
+
+
+
+    useEffect(() => {
+        if (videoRef.current && videoStream) {
+            videoRef.current.src = videoStream; // Set the video source to the stream URL
             videoRef.current.load();
         }
-    }, [currentQuality]);
+    }, [videoStream]); // Depend on videoStream
 
     // Close overlay when clicking outside
     const handleClickOutside = (event) => {
@@ -64,26 +99,7 @@ const VideoPlayer = ({ videoQualities, subtitleUrl }) => {
             </div>
 
             {/* Popup for selecting quality */}
-            {showQualityOptions && (
-                <div className="qualityOverlay" ref={overlayRef}>
-                    <label htmlFor="quality" className="qualityLabel">Choose quality:</label>
-                    <select
-                        id="quality"
-                        value={currentQuality.url} // Change here to use the URL as the value
-                        onChange={(e) => {
-                            const selectedUrl = e.target.value;
-                            const selectedLabel = videoQualities.find(quality => quality.url === selectedUrl)?.label;
-                            setCurrentQuality({ label: selectedLabel, url: selectedUrl });
-                        }}
-                    >
-                        {videoQualities.map((quality) => (
-                            <option key={quality.label} value={quality.url}>
-                                {quality.label}  {/* Display quality label, e.g., 480p, 720p */}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-            )}
+
         </div>
     );
 };

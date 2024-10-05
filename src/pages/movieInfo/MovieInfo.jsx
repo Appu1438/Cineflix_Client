@@ -137,11 +137,8 @@ const MovieInfo = () => {
                         <div className="trailer">
                             <VideoPlayer
                                 key={movie._id}
-                                videoQualities={[
-                                    { label: '360P', url: movie.trailer },
-                                    { label: '480P', url: movie.trailer },
-                                    { label: '720P', url: movie.trailer }
-                                ]} subtitleUrl={movie.trailerSubtitle} />
+                                videoUrl={movie.trailer}
+                                subtitleUrl={movie.trailerSubtitle} />
                         </div>
                         <div className="details">
                             <h1>{movie.title}</h1>
