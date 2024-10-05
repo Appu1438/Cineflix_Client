@@ -19,6 +19,7 @@ import { add_User_Likes, remove_User_Likes } from '../../context/likesContext/ap
 import { LikesContext } from '../../context/likesContext/LikesContext';
 import { formatCount } from '../../utils/formatCount';
 import StarComponent from '../starComponent/StarComponent';
+import { STREAM_URL } from '../../api';
 
 export default function ListItem({ index, item, scrolled }) {
     const [isHovered, setIsHovered] = useState(false);
@@ -140,7 +141,7 @@ export default function ListItem({ index, item, scrolled }) {
 
             {isHovered && !scrolled && (
                 <>
-                    <video src={movie.trailer} autoPlay loop controls />
+                    <video src={`${STREAM_URL}?filename=${movie.trailer}`} autoPlay loop controls />
                     <div className="itemInfo">
                         <div className="icons">
                             <Link to={`/watch/${movie._id}`} className="link">

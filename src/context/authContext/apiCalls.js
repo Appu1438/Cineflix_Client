@@ -2,6 +2,7 @@
 import axios from 'axios'
 import { fetchUserFailure, fetchUserStart, fetchUserSuccess, loginFailure, loginStart, loginSuccess } from './AuthAction'
 import axiosInstance from '../../api/axiosInstance'
+import { REACT_APP_API_URL } from '../../api';
 
 export const login = async (user, dispatch) => {
     dispatch(loginStart());
@@ -69,7 +70,7 @@ export const refresh = async () => {
 
     try {
         console.log('Attempting to refresh token');
-        const response = await axios.post('http://localhost:5000/api/auth/refresh', {}, { withCredentials: true });
+        const response = await axios.post(`${REACT_APP_API_URL}auth/refresh`, {}, { withCredentials: true });
 
         const { accessToken } = response.data;
         const updatedUser = { ...user, accessToken };

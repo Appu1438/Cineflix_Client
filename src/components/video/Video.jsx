@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './video.scss';
 import axiosInstance from '../../api/axiosInstance';
+import { STREAM_URL } from '../../api';
 
 const VideoPlayer = ({ videoUrl, subtitleUrl }) => {
     const videoRef = useRef(null);
     const subtitleRef = useRef(null);
-    const [videoStream, setVideoStream] = useState();
-    const [currentQuality, setCurrentQuality] = useState();
-    const [showQualityOptions, setShowQualityOptions] = useState(false); // State to control visibility of quality options
-    const overlayRef = useRef(null); // Ref for the overlay
+    const [currentQuality, setCurrentQuality] = useState('720p');
+    const [showQualityOptions, setShowQualityOptions] = useState(false);
+    const overlayRef = useRef(null);
 
     useEffect(() => {
         const fetchSubtitle = async () => {
@@ -30,46 +30,6 @@ const VideoPlayer = ({ videoUrl, subtitleUrl }) => {
         fetchSubtitle();
     }, [subtitleUrl]);
 
-    useEffect(() => {
-        const fetchVideoUrl = async () => {
-            try {
-                const response = await axiosInstance.get(`movies/stream-video`, {
-                    params: {
-                        filename: videoUrl // Ensure this is the correct filename
-                    },
-                    headers: {
-                        'Range': 'bytes=0-' // Request the first 1000 bytes (for example)
-                    },
-                    responseType: 'blob' // Important to set the response type
-                });
-
-                // Create a URL for the video blob and play it
-                const videoBlob = new Blob([response.data], { type: 'video/mp4' });
-                const videoUrlBlob = URL.createObjectURL(videoBlob);
-
-
-                // Ensure that the response contains the video URL
-                console.log('Video Stream URL:', response);
-                console.log('Blob', videoUrlBlob)
-                setVideoStream(videoUrlBlob); // Set the video stream URL
-            } catch (error) {
-                console.error('Error fetching video URL:', error);
-            }
-        };
-
-        fetchVideoUrl();
-    }, [videoUrl]); // Use videoFilename as a dependency
-
-
-
-
-    useEffect(() => {
-        if (videoRef.current && videoStream) {
-            videoRef.current.src = videoStream; // Set the video source to the stream URL
-            videoRef.current.load();
-        }
-    }, [videoStream]); // Depend on videoStream
-
     // Close overlay when clicking outside
     const handleClickOutside = (event) => {
         if (overlayRef.current && !overlayRef.current.contains(event.target)) {
@@ -78,28 +38,56 @@ const VideoPlayer = ({ videoUrl, subtitleUrl }) => {
     };
 
     useEffect(() => {
-        // Bind the event listener to the document
         document.addEventListener('mousedown', handleClickOutside);
 
-        // Clean up the event listener
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
 
+    const handleQualityChange = (newQuality) => {
+        const currentTime = videoRef.current.currentTime; // Store current playback time
+        setCurrentQuality(newQuality); // Change quality
+
+        // Update video source after a short delay to allow time for the quality change
+        setTimeout(() => {
+            videoRef.current.src = `${STREAM_URL}?filename=${videoUrl}&quality=${newQuality}`;
+            videoRef.current.currentTime = currentTime; // Restore the previous playback position
+            videoRef.current.play(); // Play the video again
+        }, 100); // Delay can be adjusted if needed
+    };
+
     return (
         <div className="videoPlayerContainer">
-            <video ref={videoRef} controls className='trailerVideo'>
+            <video
+                ref={videoRef}
+                src={`${STREAM_URL}?filename=${videoUrl}&quality=${currentQuality}`}
+                controls
+                className='trailerVideo'
+                preload='metadata'
+            >
                 <track ref={subtitleRef} kind="subtitles" />
             </video>
 
-            {/* Settings Icon positioned near speaker icon */}
             <div className="settingsIcon" onClick={() => setShowQualityOptions(!showQualityOptions)}>
-                ⚙️ {/* Use any settings icon or an image here */}
+                ⚙️
             </div>
 
-            {/* Popup for selecting quality */}
-
+            {showQualityOptions && (
+                <div className="qualityOverlay" ref={overlayRef}>
+                    <label htmlFor="quality" className="qualityLabel">Choose quality:</label>
+                    <select
+                        id="quality"
+                        value={currentQuality}
+                        onChange={(e) => handleQualityChange(e.target.value)} // Use the new function to handle quality change
+                    >
+                        <option value='360p'>360P</option>
+                        <option value='480p'>480P</option>
+                        <option value='720p'>720P</option>
+                        <option value='1080p'>1080P</option>
+                    </select>
+                </div>
+            )}
         </div>
     );
 };
