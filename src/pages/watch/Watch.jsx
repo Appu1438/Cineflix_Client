@@ -30,6 +30,7 @@ import { add_User_History } from '../../context/historyContext/apiCalls';
 import RecommendedMovies from '../../components/recommendMovies/RecommendMovies';
 import ListItem from '../../components/listItem/ListItem';
 import VideoPlayer from '../../components/video/Video';
+import Icons from '../../components/Icons/Icons';
 const Watch = () => {
     const location = useLocation();
     const { id } = useParams()
@@ -158,37 +159,8 @@ const Watch = () => {
                                 <h1>Watch : {movie.title}</h1>
                                 <p>{movie.desc}</p>
                                 <p>{movie.genre.join(' ,  ')}</p>
-                                <div className="icons">
-                                    <Link to={`/info/${movie._id}`} className="link">
-                                        <div className="iconContainer">
-                                            <Info className="icon" />
-                                            <span className="iconLabel">Info</span>
-                                        </div>
-                                    </Link>
-
-                                    <div className="iconContainer" onClick={handleWatchLater}>
-                                        <Add className={watch?.content?.includes(movie._id) ? "icon hovered" : "icon"} />
-                                        <span className="iconLabel">Watch Later</span>
-                                    </div>
-
-                                    <div className="iconContainer" onClick={handleFav}>
-                                        <FavoriteBorder className={fav?.content?.includes(movie._id) ? "icon hovered" : "icon"} />
-                                        <span className="iconLabel">Favorite </span>
-                                        {movie.favCount ? formatCount(movie.favCount) : ""}
-                                    </div>
-
-                                    <div className="iconContainer" onClick={handleLike}>
-                                        <ThumbUpAltOutlined className={likes?.likes?.content?.includes(movie._id) ? "icon hovered" : "icon"} />
-                                        <span className="iconLabel">Like</span>
-                                        {movie.likes ? formatCount(movie.likes) : ""}
-                                    </div>
-
-                                    <div className="iconContainer" onClick={handleDislike}>
-                                        <ThumbDownOutlined className={likes?.dislikes?.content?.includes(movie._id) ? "icon hovered" : "icon"} />
-                                        <span className="iconLabel">Dislike </span>
-                                        {movie.dislikes ? formatCount(movie.dislikes) : ""}
-                                    </div>
-                                </div>
+                              
+                              <Icons movie={movie}/>
 
                                 <div className="averageRating">
                                     <h4>Rating: {movie.average.toFixed(1)}/5</h4>
