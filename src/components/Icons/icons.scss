@@ -1,6 +1,10 @@
 .icons {
     display: flex;
-    gap: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+    position: relative; // Add this to position the share options relative to icons
+    // align-items: center;
+    justify-content: center;
 
     .iconContainer {
         position: relative;
@@ -12,9 +16,9 @@
 
         .icon {
             border: 2px solid white;
-            padding: 12px;
+            padding: 15px;
             border-radius: 50%;
-            font-size: 24px;
+            font-size: 20px;
             transition: background-color 0.3s ease, color 0.3s ease;
             color: white;
         }
@@ -32,5 +36,55 @@
             color: white;
             transition: color 0.3s;
         }
+    }
+
+    // Share options container
+    // .shareOptions {
+    //     position: absolute; // Positioning it absolutely to the icon
+    //     bottom: -30px; // Adjust this value based on how far below you want it
+    //     left: 0px; // Align to the left of the icon container
+    //     display: flex;
+    //     gap: 1px; // Spacing between share buttons
+    //     background-color: rgba(0, 0, 0, 0.7); // Optional: background for the share options
+    //     padding: 10px; // Padding around share options
+    //     border-radius: 5px; // Rounded corners for aesthetic
+
+    //     // Share button styles
+    //     .shareButton {
+    //         display: flex;
+    //         align-items: center;
+    //         justify-content: center;
+    //         width: 40px; // Adjust size as needed
+    //         height: 40px; // Adjust size as needed
+    //         border-radius: 50%; // Circular buttons
+    //         transition: background-color 0.3s ease, transform 0.3s ease;
+
+    //         &:hover {
+    //             background-color: rgba(255, 255, 255, 0.2); // Slightly lighter on hover
+    //             transform: scale(1.1); // Slight scale on hover
+    //         }
+
+    //         svg {
+    //             color: white; // Color for icons
+    //             font-size: 24px; // Size of icons
+    //         }
+    //     }
+    // }
+}
+
+
+
+/* Animation for hovered icons */
+@keyframes pop-up {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.3);
+    }
+
+    100% {
+        transform: scale(1);
     }
 }

@@ -47,43 +47,6 @@
                 color: #ddd;
             }
 
-            .icons {
-                display: flex;
-                gap: 20px;
-
-                .iconContainer {
-                    position: relative;
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    cursor: pointer;
-                    transition: transform 0.3s;
-
-                    .icon {
-                        border: 2px solid white;
-                        padding: 12px;
-                        border-radius: 50%;
-                        font-size: 24px;
-                        transition: background-color 0.3s ease, color 0.3s ease;
-                        color: white;
-                    }
-
-                    .hovered {
-                        background-color: white;
-                        color: #1c1c1c;
-                        transform: scale(1.2);
-                        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-                    }
-
-                    .iconLabel {
-                        margin-top: 10px;
-                        font-size: 0.9rem;
-                        color: white;
-                        transition: color 0.3s;
-                    }
-                }
-            }
-
             .averageRating {
                 display: flex;
                 align-items: center;
@@ -333,10 +296,6 @@
 
                 p {
                     font-size: 1rem;
-                }
-
-                .icons {
-                    gap: 15px;
                 }
 
                 .averageRating {

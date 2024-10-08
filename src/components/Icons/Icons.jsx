@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import './icons.scss'
 import {
     PlayArrow,
@@ -20,6 +20,9 @@ import { add_User_Likes, get_User_Likes, remove_User_Likes } from '../../context
 import { toast } from 'react-toastify';
 import { formatCount } from '../../utils/formatCount';
 import { Link, useLocation } from 'react-router-dom';
+import { FacebookShareButton, TwitterShareButton, WhatsappShareButton, FacebookIcon, TwitterIcon, WhatsappIcon } from 'react-share'; // Importing share buttons and icons
+import { Helmet } from 'react-helmet';
+
 export default function Icons({ movie }) {
     const location = useLocation()
     const isInfoPage = location.pathname.includes('/info');
@@ -29,6 +32,9 @@ export default function Icons({ movie }) {
     const { fav, dispatch: dispatchFav } = useContext(FavContext);
     const { watch, dispatch: dispatchWatchLater } = useContext(WatchLaterContext);
     const { likes, dispatch: dispatchLikes } = useContext(LikesContext);
+
+    // State for sharing options
+    const [shareOpen, setShareOpen] = useState(false);
 
     // Fetch user-specific data
     useEffect(() => {
@@ -82,7 +88,18 @@ export default function Icons({ movie }) {
         remove_User_Likes({ userId: user._id, movieId: movie._id }, dispatchLikes);
     };
 
+    // Function to toggle share options
+    const toggleShare = () => {
+        setShareOpen(!shareOpen);
+    };
+
+    const shareUrl = `${window.location.origin}/watch/${movie._id}`;
+    const shareTitle = movie.title || 'Check out this movie!';
+    const shareDescription = movie.description || 'Watch this amazing movie!';
+    const shareImage = movie.img || ''; // Assuming you have an image URL
+
     return (
+        
         <div className="icons">
             <Link to={isInfoPage ? `/watch/${movie._id}` : `/info/${movie._id}`} className="link">
                 <div className="iconContainer">
@@ -122,10 +139,25 @@ export default function Icons({ movie }) {
                 <span className="iconLabel">Dislike </span>
                 {movie.dislikes ? formatCount(movie.dislikes) : ""}
             </div>
-            <div className="iconContainer">
+            <div className="iconContainer" onClick={toggleShare}>
                 <Share className="icon" />
                 <span className="iconLabel">Share </span>
             </div>
+
+            {/* Share options display */}
+            {shareOpen && (
+                <div className="shareOptions">
+                    <FacebookShareButton url={shareUrl} quote={shareDescription} hashtag="#Movie">
+                        <FacebookIcon size={32} round />
+                    </FacebookShareButton>
+                    <TwitterShareButton url={shareUrl} title={shareTitle}>
+                        <TwitterIcon size={32} round />
+                    </TwitterShareButton>
+                    <WhatsappShareButton url={shareUrl} title={shareTitle} >
+                        <WhatsappIcon size={32} round />
+                    </WhatsappShareButton>
+                </div>
+            )}
         </div>
     )
 }

@@ -74,12 +74,15 @@ const MovieInfo = () => {
                                 videoUrl={movie.trailer}
                                 subtitleUrl={movie.trailerSubtitle}
                             />
+                            <Icons movie={movie} />
+
                         </div>
                         <div className="details">
                             <h1>{movie.title}</h1>
                             <p>{movie.desc}</p>
+                            <p>{movie.genre.join(' ,  ')}</p>
 
-                            <Icons movie={movie} />
+
 
                             <div className="averageRating">
                                 <h4>Rating: {movie.average.toFixed(1)}/5</h4>
