@@ -13,12 +13,15 @@ import { get_User_WatchLater } from '../../context/watchLaterContext/apiCalls';
 import { WatchLaterContext } from '../../context/watchLaterContext/WatchLaterContext';
 import { LikesContext } from '../../context/likesContext/LikesContext';
 import { get_User_Likes } from '../../context/likesContext/apiCalls';
+import { get_User_History } from '../../context/historyContext/apiCalls';
+import { HistoryContext } from '../../context/historyContext/HistoryContext';
 
 export default function Home({ type }) {
   const [lists, setLists] = useState([]);
   const [genre, setGenre] = useState(null);
 
   const { user, dispatch: dispatchUser } = useContext(AuthContext)
+  const { dispatch: dispatchHis } = useContext(HistoryContext)
   const { dispatch: dispatchFav } = useContext(FavContext)
   const { dispatch: dispatchWatchLater } = useContext(WatchLaterContext)
   const { dispatch: dispatchLikes } = useContext(LikesContext)
@@ -45,16 +48,20 @@ export default function Home({ type }) {
   }, [genre, type]);
 
   useEffect(() => {
+    get_User_History(user._id, dispatchHis);
+  }, [dispatchHis, user._id]);
+
+  useEffect(() => {
     get_User_Fav(user._id, dispatchFav)
   }, [user, dispatchFav])
 
   useEffect(() => {
     get_User_WatchLater(user._id, dispatchWatchLater)
-  }, [user,dispatchWatchLater])
+  }, [user, dispatchWatchLater])
 
   useEffect(() => {
     get_User_Likes(user._id, dispatchLikes)
-  }, [user,dispatchLikes])
+  }, [user, dispatchLikes])
 
   return (
     <div className='home'>

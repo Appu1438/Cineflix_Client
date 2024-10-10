@@ -26,7 +26,7 @@ import withReactContent from 'sweetalert2-react-content';
 import { ReviewsComponent } from '../../components/review/Review';
 import StarComponent from '../../components/starComponent/StarComponent';
 import { HistoryContext } from '../../context/historyContext/HistoryContext';
-import { add_User_History } from '../../context/historyContext/apiCalls';
+import { add_User_History, get_User_History } from '../../context/historyContext/apiCalls';
 import RecommendedMovies from '../../components/recommendMovies/RecommendMovies';
 import ListItem from '../../components/listItem/ListItem';
 import VideoPlayer from '../../components/video/Video';
@@ -35,7 +35,7 @@ const Watch = () => {
     const location = useLocation();
     const { id } = useParams()
     const { user } = useContext(AuthContext);
-    const { dispatch } = useContext(HistoryContext)
+    const { history, dispatch } = useContext(HistoryContext)
     const { fav, dispatch: dispatchFav } = useContext(FavContext);
     const { watch, dispatch: dispatchWatchLater } = useContext(WatchLaterContext);
     const { likes, dispatch: dispatchLikes } = useContext(LikesContext);
@@ -43,10 +43,15 @@ const Watch = () => {
     const [movie, setMovie] = useState(null);
     const [reviews, setReviews] = useState([]);
 
+    const [watchedPosition, setWatchedPosition] = useState(0);
 
     const MySwal = withReactContent(Swal);
 
     // Fetch user-specific data
+    useEffect(() => {
+        get_User_History(user._id, dispatch);
+    }, [dispatch, user._id]);
+
     useEffect(() => {
         get_User_Fav(user._id, dispatchFav);
     }, [dispatchFav, user._id]);
@@ -66,6 +71,20 @@ const Watch = () => {
             behavior: 'smooth' // This enables smooth scrolling
         });
     }, [id, reviews]);
+
+    useEffect(() => {
+        // Find the history entry for the corresponding movie ID
+        const movieHistory = history?.content?.find(item => item.movieId === id);
+
+        if (movieHistory) {
+            // If found, update the watched position
+            setWatchedPosition(movieHistory.watchedPosition);
+        } else {
+            // If not found, set to 0 or any default value you prefer
+            setWatchedPosition(0);
+        }
+    }, [id, history]); // Adding history and movieId to dependencies
+
 
     // Fetch movie details
     useEffect(() => {
@@ -92,106 +111,87 @@ const Watch = () => {
         };
     }, [id, fav, likes, reviews]);
 
+    const handleBeforeUnload = () => {
+        if (watchedPosition > 0) {
+            // Only update history if the watched position is greater than 0
+            add_User_History({ userId: user._id, movieId: movie?._id, watchedPosition }, dispatch);
+        }
+    };
 
-    //History
     useEffect(() => {
-        add_User_History({ userId: user._id, movieId: movie?._id }, dispatch)
-    }, [dispatch, user?._id, movie?._id])
+        // Add event listener for page unload
+        const beforeUnloadHandler = (event) => {
+            handleBeforeUnload(); // Call your custom logic
+            // You can also set a message for confirmation if you need the user to acknowledge the leave
+            // event.preventDefault();
+            // event.returnValue = ''; // Required for modern browsers to trigger the prompt
+        };
+    window.addEventListener('beforeunload', beforeUnloadHandler);
 
-
-    // Handle adding/removing from favorites
-    const handleFav = async () => {
-        try {
-            if (fav?.content?.includes(movie._id)) {
-                await remove_User_Fav({ userId: user._id, movieId: movie._id }, dispatchFav);
-                toast.info("Removed from favorites!");
-            } else {
-                await add_User_Fav({ userId: user._id, movieId: movie._id }, dispatchFav);
-                toast.success("Added to favorites!");
-            }
-        } catch (error) {
-            toast.error("Failed to update favorites!");
-        }
+    // Cleanup event listener on component unmount
+    return () => {
+        window.removeEventListener('beforeunload', beforeUnloadHandler);
+        // Save history when component unmounts (if needed)
+        handleBeforeUnload(); // Ensure history is updated when the component unmounts
     };
-
-    // Handle adding/removing from Watch Later
-    const handleWatchLater = async () => {
-        try {
-            if (watch?.content?.includes(movie._id)) {
-                await remove_User_WatchLater({ userId: user._id, movieId: movie._id }, dispatchWatchLater);
-                toast.info("Removed from Watch Later!");
-            } else {
-                await add_User_WatchLater({ userId: user._id, movieId: movie._id }, dispatchWatchLater);
-                toast.success("Added to Watch Later!");
-            }
-        } catch (error) {
-            toast.error("Failed to update Watch Later!");
-        }
-    };
-
-    // Handle like/dislike actions
-    const handleLike = async () => {
-        add_User_Likes({ userId: user._id, movieId: movie._id }, dispatchLikes);
-    };
-
-    const handleDislike = async () => {
-        remove_User_Likes({ userId: user._id, movieId: movie._id }, dispatchLikes);
-    };
+}, [dispatch, user?._id, movie?._id, watchedPosition]);
 
 
 
 
-    return (
-        <div className="movieInfoContainer">
-            {movie ? (
-                <>
-                    <div className="detailsReviewsContainer">
-                        <div className="movieHeader">
-                            <div className="trailer">
-                                <VideoPlayer
-                                    key={movie._id}
-                                    videoUrl={movie.video}
-                                    subtitleUrl={movie.videoSubtitle}
-                                />
-                                <Icons movie={movie} />
+return (
+    <div className="movieInfoContainer">
+        {movie ? (
+            <>
+                <div className="detailsReviewsContainer">
+                    <div className="movieHeader">
+                        <div className="trailer">
+                            <VideoPlayer
+                                key={movie._id}
+                                videoUrl={movie.video}
+                                subtitleUrl={movie.videoSubtitle}
+                                watchedPortion={watchedPosition}
+                                setWatchedPortion={setWatchedPosition}
+                            />
+                            <Icons movie={movie} />
 
-                            </div>
-
-                            <div className="details">
-                                <h1>Watch : {movie.title}</h1>
-                                <p>{movie.desc}</p>
-                                <p>{movie.genre.join(' ,  ')}</p>
-
-
-                                <div className="averageRating">
-                                    <h4>Rating: {movie.average.toFixed(1)}/5</h4>
-                                    <StarComponent rating={movie.average} />
-                                </div>
-                            </div>
                         </div>
 
-                        {/* Reviews Section */}
-                        <div className="reviewsSection">
-                            <h2>Reviews {movie.reviewcount !== undefined ? `(${formatCount(movie.reviewcount)})` : ""}</h2>
-                            <ReviewsComponent id={id} user={user} reviews={reviews} setReviews={setReviews} />
+                        <div className="details">
+                            <h1>Watch : {movie.title}</h1>
+                            <p>{movie.desc}</p>
+                            <p>{movie.genre.join(' ,  ')}</p>
 
+
+                            <div className="averageRating">
+                                <h4>Rating: {movie.average.toFixed(1)}/5</h4>
+                                <StarComponent rating={movie.average} />
+                            </div>
                         </div>
                     </div>
 
-                    {/* Recomendation section*/}
-                    {movie && (
-                        <div className="recommendedMovies">
-                            <h2>Recommended Movies</h2>
-                            <RecommendedMovies movieId={id} />
-                        </div>
-                    )}
+                    {/* Reviews Section */}
+                    <div className="reviewsSection">
+                        <h2>Reviews {movie.reviewcount !== undefined ? `(${formatCount(movie.reviewcount)})` : ""}</h2>
+                        <ReviewsComponent id={id} user={user} reviews={reviews} setReviews={setReviews} />
 
-                </>
-            ) : (
-                <Spinner />
-            )}
-        </div>
-    );
+                    </div>
+                </div>
+
+                {/* Recomendation section*/}
+                {movie && (
+                    <div className="recommendedMovies">
+                        <h2>Recommended Movies</h2>
+                        <RecommendedMovies movieId={id} />
+                    </div>
+                )}
+
+            </>
+        ) : (
+            <Spinner />
+        )}
+    </div>
+);
 
 };
 

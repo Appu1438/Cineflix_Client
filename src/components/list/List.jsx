@@ -5,7 +5,7 @@ import ListItem from '../listItem/ListItem';
 
 const List = ({ list }) => {
     const listRef = useRef();
-   
+
     const [isScrolling, setIsScrolling] = useState(false);
 
     // Variable to track if scrolling has stopped
@@ -78,9 +78,9 @@ const List = ({ list }) => {
                 onMouseLeave={handleMouseLeave}
             >
                 <div className="container">
-                {list?.content?.map((item, index) => (
-                        <ListItem index={index} item={item} key={index} scrolled={isScrolling} />
-                  ))}
+                    {list?.content?.map((item, index) => (
+                        <ListItem index={index} item={item.movieId ? item.movieId : item} key={index} scrolled={isScrolling} />
+                    ))}
                 </div>
             </div>
         </div>

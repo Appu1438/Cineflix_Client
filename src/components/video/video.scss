@@ -104,6 +104,10 @@ select {
     align-items: center;
     /* Centers progress and buffered bars vertically */
 
+
+    /* Add transition for opacity */
+    transition: opacity 0.5s ease-in-out; /* Change 0.5s to your desired duration */
+
     &:hover {
         opacity: 1;
     }

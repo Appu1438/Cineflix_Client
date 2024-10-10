@@ -2,13 +2,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import './video.scss';
 import { STREAM_URL } from '../../api';
 
-const VideoPlayer = ({ videoUrl, subtitleUrl }) => {
+const VideoPlayer = ({ videoUrl, subtitleUrl, watchedPortion, setWatchedPortion }) => {
     const videoRef = useRef(null);
     const subtitleRef = useRef(null);
     const overlayRef = useRef(null);
     const progressBarRef = useRef(null);
     const offscreenVideoRef = useRef(null);
 
+    console.log(watchedPortion)
     const [currentQuality, setCurrentQuality] = useState('720p');
     const [showQualityOptions, setShowQualityOptions] = useState(false);
     const [hoveredTime, setHoveredTime] = useState(null);
@@ -116,6 +117,9 @@ const VideoPlayer = ({ videoUrl, subtitleUrl }) => {
         if (duration) {
             const clickTime = (clickPosition / progressBarWidth) * duration;
             videoRef.current.currentTime = clickTime; // Seek to the clicked time
+            if (setWatchedPortion) {
+                setWatchedPortion((clickTime / duration) * 100); // Update watched position
+            }
         }
     };
 
@@ -128,13 +132,24 @@ const VideoPlayer = ({ videoUrl, subtitleUrl }) => {
     };
 
     const hideProgressBar = () => {
-        progressBarRef.current.style.opacity = '0';
+        // Assuming you have a reference to your video element
+        const videoElement = videoRef.current; // Replace with your actual video reference
+
+        // Check if the video is not paused
+        if (!videoElement.paused) {
+            // Hide the progress bar
+            progressBarRef.current.style.opacity = '0';
+        }
     };
+
 
     const updateProgress = () => {
         const duration = videoRef.current.duration;
         const currentTime = videoRef.current.currentTime;
         setProgress((currentTime / duration) * 100);
+        if (setWatchedPortion) {
+            setWatchedPortion((currentTime / duration) * 100); // Update watched position
+        }
     };
 
     const updateBufferedProgress = () => {
@@ -160,6 +175,30 @@ const VideoPlayer = ({ videoUrl, subtitleUrl }) => {
         }
     }, []);
 
+
+    useEffect(() => {
+        const video = videoRef.current;
+
+        // Set the watched position when video metadata is loaded
+        const handleLoadedMetadata = () => {
+            if (watchedPortion) {
+                video.currentTime = (watchedPortion / 100) * video.duration; // Convert watched portion percentage to seconds
+            }
+        };
+
+        if (video) {
+            video.addEventListener('loadedmetadata', handleLoadedMetadata);
+            video.addEventListener('timeupdate', updateProgress);
+            video.addEventListener('progress', updateBufferedProgress);
+            return () => {
+                video.removeEventListener('loadedmetadata', handleLoadedMetadata);
+                video.removeEventListener('timeupdate', updateProgress);
+                video.removeEventListener('progress', updateBufferedProgress);
+            };
+        }
+    }, [watchedPortion]); // Add watchedPortion as a dependency
+
+
     return (
         <div
             className="videoPlayerContainer"
@@ -173,6 +212,7 @@ const VideoPlayer = ({ videoUrl, subtitleUrl }) => {
                 className="trailerVideo"
                 preload="metadata"
                 crossOrigin="anonymous"
+                onPause={showProgressBar}
             >
                 <track ref={subtitleRef} kind="subtitles" />
             </video>
@@ -214,7 +254,7 @@ const VideoPlayer = ({ videoUrl, subtitleUrl }) => {
             >
                 <div className="buffered" style={{ width: `${bufferedProgress}%` }} />
                 <div className="progress" style={{ width: `${progress}%` }} />
-               
+
                 <div
                     className="progressCircle"
                     style={{ left: `calc(${progress}% - 10px)` }}
