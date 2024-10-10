@@ -8,13 +8,15 @@ const VideoPlayer = ({ videoUrl, subtitleUrl }) => {
     const overlayRef = useRef(null);
     const progressBarRef = useRef(null);
     const offscreenVideoRef = useRef(null);
-    
+
     const [currentQuality, setCurrentQuality] = useState('720p');
     const [showQualityOptions, setShowQualityOptions] = useState(false);
     const [hoveredTime, setHoveredTime] = useState(null);
     const [previewThumbnail, setPreviewThumbnail] = useState(null);
     const [thumbnailVisible, setThumbnailVisible] = useState(false);
-    
+    const [progress, setProgress] = useState(0); // Track video progress
+    const [bufferedProgress, setBufferedProgress] = useState(0); // Track buffered progress
+
     useEffect(() => {
         const fetchSubtitle = async () => {
             try {
@@ -121,20 +123,58 @@ const VideoPlayer = ({ videoUrl, subtitleUrl }) => {
         setThumbnailVisible(false); // Hide the thumbnail when the mouse leaves
     };
 
+    const showProgressBar = () => {
+        progressBarRef.current.style.opacity = '1';
+    };
+
+    const hideProgressBar = () => {
+        progressBarRef.current.style.opacity = '0';
+    };
+
+    const updateProgress = () => {
+        const duration = videoRef.current.duration;
+        const currentTime = videoRef.current.currentTime;
+        setProgress((currentTime / duration) * 100);
+    };
+
+    const updateBufferedProgress = () => {
+        const video = videoRef.current;
+        if (video && video.buffered.length > 0) {
+            const bufferedEnd = video.buffered.end(video.buffered.length - 1);
+            const duration = video.duration;
+            if (duration > 0) {
+                setBufferedProgress((bufferedEnd / duration) * 100);
+            }
+        }
+    };
+
+    useEffect(() => {
+        const video = videoRef.current;
+        if (video) {
+            video.addEventListener('timeupdate', updateProgress);
+            video.addEventListener('progress', updateBufferedProgress);
+            return () => {
+                video.removeEventListener('timeupdate', updateProgress);
+                video.removeEventListener('progress', updateBufferedProgress);
+            };
+        }
+    }, []);
+
     return (
-        <div className="videoPlayerContainer">
+        <div
+            className="videoPlayerContainer"
+            onMouseEnter={showProgressBar}
+            onMouseLeave={hideProgressBar}
+        >
             <video
                 ref={videoRef}
                 src={`${STREAM_URL}?filename=${videoUrl}&quality=${currentQuality}`}
                 controls
-                className='trailerVideo'
-                preload='metadata'
+                className="trailerVideo"
+                preload="metadata"
                 crossOrigin="anonymous"
             >
-                <track
-                    ref={subtitleRef}
-                    kind="subtitles"
-                />
+                <track ref={subtitleRef} kind="subtitles" />
             </video>
 
             <video
@@ -157,10 +197,10 @@ const VideoPlayer = ({ videoUrl, subtitleUrl }) => {
                         value={currentQuality}
                         onChange={(e) => handleQualityChange(e.target.value)}
                     >
-                        <option value='360p'>360P</option>
-                        <option value='480p'>480P</option>
-                        <option value='720p'>720P</option>
-                        <option value='1080p'>1080P</option>
+                        <option value="360p">360P</option>
+                        <option value="480p">480P</option>
+                        <option value="720p">720P</option>
+                        <option value="1080p">1080P</option>
                     </select>
                 </div>
             )}
@@ -168,17 +208,26 @@ const VideoPlayer = ({ videoUrl, subtitleUrl }) => {
             <div
                 className="customProgressBar"
                 onMouseMove={handleMouseMoveOnProgressBar}
-                onMouseLeave={handleMouseLeave} // Hide thumbnail on mouse leave
+                onMouseLeave={handleMouseLeave}
                 ref={progressBarRef}
                 onClick={handleProgressBarClick}
             >
+                <div className="buffered" style={{ width: `${bufferedProgress}%` }} />
+                <div className="progress" style={{ width: `${progress}%` }} />
+               
                 <div
-                    className="progress"
-                    style={{ width: `${(videoRef?.current?.currentTime / videoRef?.current?.duration) * 100}%` }}
+                    className="progressCircle"
+                    style={{ left: `calc(${progress}% - 10px)` }}
                 />
             </div>
+
             {thumbnailVisible && hoveredTime && previewThumbnail && (
-                <div className="previewThumbnail" style={{ left: `${(hoveredTime / videoRef.current.duration) * 100}%` }}>
+                <div
+                    className="previewThumbnail"
+                    style={{
+                        left: `${(hoveredTime / videoRef.current.duration) * 100}%`,
+                    }}
+                >
                     <img src={previewThumbnail} alt="Preview" />
                     <span>{new Date(hoveredTime * 1000).toISOString().substr(11, 8)}</span>
                 </div>
