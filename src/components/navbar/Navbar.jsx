@@ -39,12 +39,15 @@ const Navbar = () => {
                         <span>Series</span>
                     </Link>
                     <Link to={'/profile'} className='link'>
-                    <span>My List</span>
+                        <span>My List</span>
                     </Link>
                 </div>
 
                 <div className="right">
-                    <Search className='icon' />
+                    <Link to={'/search'} className='link'>
+                        <Search className='icon' />
+                    </Link>
+
                     <span>KID</span>
                     <Notifications className='icon' />
                     <img

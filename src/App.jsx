@@ -11,6 +11,7 @@ import axiosInstance from './api/axiosInstance';
 import { fetchUserDetailsIfOutdated } from './context/authContext/apiCalls';
 import MyList from './pages/myList/MyList';
 import MovieInfo from './pages/movieInfo/MovieInfo';
+import MovieSearch from './pages/search/Search';
 
 function App() {
   const { user, dispatch } = useContext(AuthContext);
@@ -33,6 +34,7 @@ function App() {
             <Route path='/watch/:id' element={<Watch />} />
             <Route path='/info/:id' element={<MovieInfo />} />
             <Route path='/profile' element={<MyList />} />
+            <Route path='/search' element={<MovieSearch />} />
 
           </>
         ) : (
