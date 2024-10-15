@@ -12,8 +12,9 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, watchedPortion, setWatchedPortion 
     const offscreenVideoRef = useRef(null);
     const CustomControlRef = useRef(null)
 
-    console.log(watchedPortion)
-    const [currentQuality, setCurrentQuality] = useState('720p');
+    const [currentQuality, setCurrentQuality] = useState('360p');
+    const [autoQuality, setAutoQuality] = useState('360p');
+    const [networkSpeed, setNetworkSpeed] = useState(null);
     const [showQualityOptions, setShowQualityOptions] = useState(false);
     const [hoveredTime, setHoveredTime] = useState(null);
     const [previewThumbnail, setPreviewThumbnail] = useState(null);
@@ -24,7 +25,87 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, watchedPortion, setWatchedPortion 
     const [showSkipAnimation, setShowSkipAnimation] = useState(false);
     const [skipMessage, setSkipMessage] = useState('');
     const [isPaused, setIsPaused] = useState(true);
+    const checkInterval = 3000; // Check network speed every 5 seconds
 
+    useEffect(() => {
+        // Function to check network speed
+        const checkNetworkSpeed = () => {
+            if (navigator.connection) {
+                const { effectiveType } = navigator.connection;
+                console.log('Network speed:', effectiveType);
+
+                switch (effectiveType) {
+                    case 'slow-2g':
+                        setNetworkSpeed('verylow');
+                        break;
+                    case '2g':
+                        setNetworkSpeed('low');
+                        break;
+                    case '3g':
+                        setNetworkSpeed('moderate');
+                        break;
+                    case '4g':
+                    default:
+                        setNetworkSpeed('high');
+                        break;
+                }
+            } else {
+                // Fallback if navigator.connection is not available
+                setNetworkSpeed('high');
+            }
+        };
+
+        // Initial network speed check
+        checkNetworkSpeed();
+
+        // Set up interval to periodically check network speed
+        const intervalId = setInterval(checkNetworkSpeed, checkInterval);
+
+        // Cleanup interval on component unmount
+        return () => clearInterval(intervalId);
+    }, []);
+
+    useEffect(() => {
+        // Change quality based on network speed if Auto is enabled
+        if (networkSpeed) {
+            let quality;
+            if (networkSpeed === 'verylow') {
+                quality = '360p';
+            } else if (networkSpeed === 'low') {
+                quality = '480p';
+            } else if (networkSpeed === 'moderate') {
+                quality = '720p';
+            } else if (networkSpeed === 'high') {
+                // If the network is very strong or if additional logic is needed to detect 1080p availability
+                quality = '1080p';
+            }
+            console.log('Quality based on speed:', quality);
+            setAutoQuality(quality);
+        }
+    }, [networkSpeed]);
+
+
+    const handleQualityChange = (newQuality) => {
+        const currentTime = videoRef.current.currentTime;
+
+        if (newQuality === 'Auto') {
+            setCurrentQuality('Auto');
+            setTimeout(() => {
+                // Apply autoQuality when "Auto" is selected
+                videoRef.current.src = `${STREAM_URL}?filename=${videoUrl}&quality=${autoQuality}`;
+                videoRef.current.currentTime = currentTime;
+                videoRef.current.play();
+            }, 100);
+
+        } else {
+            setCurrentQuality(newQuality);
+            setTimeout(() => {
+                videoRef.current.src = `${STREAM_URL}?filename=${videoUrl}&quality=${newQuality}`;
+                videoRef.current.currentTime = currentTime;
+                videoRef.current.play();
+            }, 100);
+        }
+    };
 
     useEffect(() => {
         const fetchSubtitle = async () => {
@@ -57,17 +138,6 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, watchedPortion, setWatchedPortion 
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
-
-    const handleQualityChange = (newQuality) => {
-        const currentTime = videoRef.current.currentTime;
-        setCurrentQuality(newQuality);
-
-        setTimeout(() => {
-            videoRef.current.src = `${STREAM_URL}?filename=${videoUrl}&quality=${newQuality}`;
-            videoRef.current.currentTime = currentTime;
-            videoRef.current.play();
-        }, 100);
-    };
 
     const handleMouseMoveOnProgressBar = (e) => {
         const progressBar = e.currentTarget;
@@ -224,7 +294,7 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, watchedPortion, setWatchedPortion 
         if (tapGap < 300 && tapGap > 0) {
             // Double-tap detected
             handleDoubleTap(direction);
-        } 
+        }
         setLastTap(currentTime);
     };
 
@@ -322,6 +392,7 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, watchedPortion, setWatchedPortion 
                     {skipMessage}
                 </motion.div>
             )}
+            
             <video
                 ref={offscreenVideoRef}
                 src={`${STREAM_URL}?filename=${videoUrl}&quality=${currentQuality}`}
@@ -342,6 +413,7 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, watchedPortion, setWatchedPortion 
                         value={currentQuality}
                         onChange={(e) => handleQualityChange(e.target.value)}
                     >
+                        <option value="Auto">Auto {autoQuality}</option>
                         <option value="360p">360P</option>
                         <option value="480p">480P</option>
                         <option value="720p">720P</option>
