@@ -26,7 +26,6 @@ const MovieSearch = () => {
     // Debounced search function
     const debouncedSearch = useCallback(
         _.debounce(async (query) => {
-            localStorage.setItem('search', query);
             if (query.length >= 3) { // Perform the search only if the query length is 3 or more characters
                 try {
                     const response = await axiosInstance.get('movies/search', {
@@ -34,6 +33,8 @@ const MovieSearch = () => {
                     });
                     setMovies(response.data);
                     setShowSuggestions(false);
+                    localStorage.setItem('search', query);
+
                 } catch (error) {
                     console.error('Error fetching movies', error);
                 }
@@ -58,14 +59,14 @@ const MovieSearch = () => {
             setFilteredSuggestions(suggestions);
         } else {
             // Show all search history if the input is empty
-            setFilteredSuggestions(history.search.reverse());
+            setFilteredSuggestions(history?.search?.reverse());
         }
         setShowSuggestions(true);
     };
 
     const handleFocus = () => {
         // Show full search history when input is focused
-        setFilteredSuggestions(history.search.reverse());
+        setFilteredSuggestions(history?.search?.reverse());
         setShowSuggestions(true);
     };
 

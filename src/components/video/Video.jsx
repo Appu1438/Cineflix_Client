@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './video.scss';
 import { STREAM_URL } from '../../api';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Forward10, Replay10, PlayArrow, Pause } from '@mui/icons-material';
 
 const VideoPlayer = ({ videoUrl, subtitleUrl, watchedPortion, setWatchedPortion }) => {
     const videoRef = useRef(null);
@@ -8,6 +10,7 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, watchedPortion, setWatchedPortion 
     const overlayRef = useRef(null);
     const progressBarRef = useRef(null);
     const offscreenVideoRef = useRef(null);
+    const CustomControlRef = useRef(null)
 
     console.log(watchedPortion)
     const [currentQuality, setCurrentQuality] = useState('720p');
@@ -17,6 +20,11 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, watchedPortion, setWatchedPortion 
     const [thumbnailVisible, setThumbnailVisible] = useState(false);
     const [progress, setProgress] = useState(0); // Track video progress
     const [bufferedProgress, setBufferedProgress] = useState(0); // Track buffered progress
+    const [lastTap, setLastTap] = useState(0); // To detect double-tap
+    const [showSkipAnimation, setShowSkipAnimation] = useState(false);
+    const [skipMessage, setSkipMessage] = useState('');
+    const [isPaused, setIsPaused] = useState(true);
+
 
     useEffect(() => {
         const fetchSubtitle = async () => {
@@ -141,6 +149,20 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, watchedPortion, setWatchedPortion 
             progressBarRef.current.style.opacity = '0';
         }
     };
+    const showCustomControls = () => {
+        CustomControlRef.current.style.opacity = '1'
+    };
+
+    const hideCustomControls = () => {
+        // Assuming you have a reference to your video element
+        const videoElement = videoRef.current; // Replace with your actual video reference
+
+        // Check if the video is not paused
+        if (!videoElement.paused) {
+            // Hide the progress bar
+            CustomControlRef.current.style.opacity = '0'
+        }
+    };
 
 
     const updateProgress = () => {
@@ -175,6 +197,50 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, watchedPortion, setWatchedPortion 
         }
     }, []);
 
+    const handleDoubleTap = (direction) => {
+        const video = videoRef.current;
+        const skipAmount = 10
+        const isPaused = video.paused
+
+        if (direction === 'forward') {
+            video.currentTime = Math.min(video.currentTime + 10, video.duration);
+            setSkipMessage(`+${skipAmount} sec`);
+
+        } else if (direction === 'backward') {
+            video.currentTime = Math.max(video.currentTime - 10, 0);
+            setSkipMessage(`-${skipAmount} sec`);
+        }
+
+
+        // Show animation
+        setShowSkipAnimation(true);
+        setTimeout(() => setShowSkipAnimation(false), 800); // Hide after 0.8 seconds
+    };
+
+    const handleTap = (e, direction) => {
+        const currentTime = new Date().getTime();
+        const tapGap = currentTime - lastTap;
+
+        if (tapGap < 300 && tapGap > 0) {
+            // Double-tap detected
+            handleDoubleTap(direction);
+        } 
+        setLastTap(currentTime);
+    };
+
+    const togglePlayPause = () => {
+        const video = videoRef.current;
+        if (video.paused) {
+            video.play();
+            setIsPaused(false)
+
+        } else {
+            video.pause();
+            setIsPaused(true)
+        }
+    };
+
+
 
     useEffect(() => {
         const video = videoRef.current;
@@ -205,6 +271,8 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, watchedPortion, setWatchedPortion 
             onMouseEnter={showProgressBar}
             onMouseLeave={hideProgressBar}
         >
+            <div className="videoTapArea left" onClick={(e) => handleTap(e, 'backward')} />
+
             <video
                 ref={videoRef}
                 src={`${STREAM_URL}?filename=${videoUrl}&quality=${currentQuality}`}
@@ -212,11 +280,48 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, watchedPortion, setWatchedPortion 
                 className="trailerVideo"
                 preload="metadata"
                 crossOrigin="anonymous"
-                onPause={showProgressBar}
+                onPause={() => {
+                    setIsPaused(true)
+                    showProgressBar()
+                }}
+                onPlay={() => setIsPaused(false)}
+                onMouseEnter={showCustomControls}
+                onMouseLeave={hideCustomControls}
             >
                 <track ref={subtitleRef} kind="subtitles" />
+
             </video>
 
+            <div className="videoTapArea right" onClick={(e) => handleTap(e, 'forward')} />
+
+            <div className="customControls" ref={CustomControlRef} onMouseEnter={showCustomControls} onMouseLeave={hideCustomControls}>
+                <button className="skipLeftButton" onClick={() => handleDoubleTap('backward')}>
+                    <Replay10 className='customIcons' style={{ fontSize: '50px' }} />
+                </button>
+                <button className="pauseButton" onClick={togglePlayPause}>
+                    {isPaused ? (
+                        <PlayArrow className='customIcons' style={{ fontSize: '50px' }} />
+                    ) : (
+                        <Pause className='customIcons' style={{ fontSize: '50px' }} />
+                    )}
+                </button>
+                <button className="skipRightButton" onClick={() => handleDoubleTap('forward')}>
+                    <Forward10 className='customIcons' style={{ fontSize: '50px' }} />
+                </button>
+            </div>
+
+
+            {showSkipAnimation && (
+                <motion.div
+                    className="skipAnimation"
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 1.2 }}
+                    transition={{ duration: 0.5, ease: 'easeInOut' }}
+                >
+                    {skipMessage}
+                </motion.div>
+            )}
             <video
                 ref={offscreenVideoRef}
                 src={`${STREAM_URL}?filename=${videoUrl}&quality=${currentQuality}`}

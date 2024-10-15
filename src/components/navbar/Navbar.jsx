@@ -48,7 +48,7 @@ const Navbar = () => {
                         <Search className='icon' />
                     </Link>
 
-                    <span>KID</span>
+                    <span>{user?.username}</span>
                     <Notifications className='icon' />
                     <img
                         src={user.profilePic || "https://images.pexels.com/photos/6899260/pexels-photo-6899260.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"}
@@ -56,7 +56,9 @@ const Navbar = () => {
                     <div className="profile">
                         <ArrowDropDown className='icon' />
                         <div className="options">
-                            <span>Settings</span>
+                            <Link to={'/profile'}>
+                                <span>Settings</span>
+                            </Link>
                             <span onClick={handleLogout}>Logout</span>
                         </div>
                     </div>
