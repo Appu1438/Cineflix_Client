@@ -50,7 +50,6 @@ export default function MyList() {
 
     return (
         <div className="my-list">
-            <Navbar />
             <div className="profile-section">
                 <div className="profile-info">
                     <img

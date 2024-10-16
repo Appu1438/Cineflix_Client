@@ -9,12 +9,15 @@
     max-width: 100%;
     height: auto;
     margin: 0 auto;
+    
 
     .detailsReviewsContainer {
         flex: 1; // Allow it to take available space
         display: flex;
         flex-direction: column; // Maintain vertical stacking
         gap: 30px;
+        padding-top: 20px; // Additional padding inside the section
+
 
         .movieHeader {
             display: flex;

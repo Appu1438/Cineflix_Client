@@ -28,26 +28,22 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, watchedPortion, setWatchedPortion 
     const checkInterval = 3000; // Check network speed every 5 seconds
 
     useEffect(() => {
-        // Function to check network speed
-        const checkNetworkSpeed = () => {
+        // Function to check network speed and quality
+        const checkNetworkQuality = () => {
             if (navigator.connection) {
-                const { effectiveType } = navigator.connection;
-                console.log('Network speed:', effectiveType);
+                const { effectiveType, rtt, downlink } = navigator.connection;
+                console.log('Effective network type:', effectiveType);
+                console.log('RTT:', rtt, 'Downlink speed:', downlink);
 
-                switch (effectiveType) {
-                    case 'slow-2g':
-                        setNetworkSpeed('verylow');
-                        break;
-                    case '2g':
-                        setNetworkSpeed('low');
-                        break;
-                    case '3g':
-                        setNetworkSpeed('moderate');
-                        break;
-                    case '4g':
-                    default:
-                        setNetworkSpeed('high');
-                        break;
+                // Use RTT and Downlink to determine network quality
+                if (rtt > 300 || downlink < 1) {
+                    setNetworkSpeed('verylow'); // Bad quality
+                } else if (rtt > 150 || downlink < 3) {
+                    setNetworkSpeed('low');
+                } else if (rtt > 100 || downlink < 5) {
+                    setNetworkSpeed('moderate');
+                } else {
+                    setNetworkSpeed('high');
                 }
             } else {
                 // Fallback if navigator.connection is not available
@@ -55,11 +51,11 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, watchedPortion, setWatchedPortion 
             }
         };
 
-        // Initial network speed check
-        checkNetworkSpeed();
+        // Initial network quality check
+        checkNetworkQuality();
 
-        // Set up interval to periodically check network speed
-        const intervalId = setInterval(checkNetworkSpeed, checkInterval);
+        // Set up interval to periodically check network quality
+        const intervalId = setInterval(checkNetworkQuality, checkInterval);
 
         // Cleanup interval on component unmount
         return () => clearInterval(intervalId);
@@ -93,6 +89,7 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, watchedPortion, setWatchedPortion 
             setTimeout(() => {
                 // Apply autoQuality when "Auto" is selected
                 videoRef.current.src = `${STREAM_URL}?filename=${videoUrl}&quality=${autoQuality}`;
+                offscreenVideoRef.current.src = `${STREAM_URL}?filename=${videoUrl}&quality=${autoQuality}`;
                 videoRef.current.currentTime = currentTime;
                 videoRef.current.play();
             }, 100);
@@ -101,6 +98,8 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, watchedPortion, setWatchedPortion 
             setCurrentQuality(newQuality);
             setTimeout(() => {
                 videoRef.current.src = `${STREAM_URL}?filename=${videoUrl}&quality=${newQuality}`;
+                offscreenVideoRef.current.src = `${STREAM_URL}?filename=${videoUrl}&quality=${newQuality}`;
+
                 videoRef.current.currentTime = currentTime;
                 videoRef.current.play();
             }, 100);
@@ -381,7 +380,7 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, watchedPortion, setWatchedPortion 
             </div>
 
 
-            {showSkipAnimation && (
+            {/* {showSkipAnimation && (
                 <motion.div
                     className="skipAnimation"
                     initial={{ opacity: 0, scale: 0.5 }}
@@ -391,8 +390,8 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, watchedPortion, setWatchedPortion 
                 >
                     {skipMessage}
                 </motion.div>
-            )}
-            
+            )} */}
+
             <video
                 ref={offscreenVideoRef}
                 src={`${STREAM_URL}?filename=${videoUrl}&quality=${currentQuality}`}

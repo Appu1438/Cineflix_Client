@@ -26,21 +26,24 @@ const MovieSearch = () => {
     // Debounced search function
     const debouncedSearch = useCallback(
         _.debounce(async (query) => {
-            if (query.length >= 3) { // Perform the search only if the query length is 3 or more characters
+            const trimmedQuery = query.trim(); // Trim spaces from the input
+
+            if (trimmedQuery.length >= 3) { // Perform the search only if the trimmed query length is 3 or more characters
                 try {
                     const response = await axiosInstance.get('movies/search', {
-                        params: { text: query },
+                        params: { text: trimmedQuery },
                     });
                     setMovies(response.data);
                     setShowSuggestions(false);
-                    localStorage.setItem('search', query);
+                    localStorage.setItem('search', trimmedQuery);
 
                 } catch (error) {
                     console.error('Error fetching movies', error);
                 }
             }
-        }, 1000), [] // The delay is 300 milliseconds
+        }, 1000), [] // The delay is 1000 milliseconds
     );
+
 
     useEffect(() => {
         if (searchQuery) {
@@ -82,7 +85,6 @@ const MovieSearch = () => {
 
     return (
         <div className="search-page">
-            <Navbar />
             <div className="search-container">
                 <div className="search-bar">
                     <input
