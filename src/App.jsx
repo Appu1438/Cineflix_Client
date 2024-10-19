@@ -26,9 +26,8 @@ function App() {
   return (
     <Router>
       <ToastContainer position="top-right" autoClose={2000} />
-      {user && <Navbar />} {/* Render the Navbar only if the user is authenticated */}
+      {user && <Navbar />} 
       <div className="contentContainer"> {/* Add a wrapper with padding or margin */}
-
       <Routes>
         <Route path='/' element={user ? <Home type={null} /> : <Navigate to={'/login'} />} />
         {user ? (
@@ -45,7 +44,6 @@ function App() {
           <Route path="*" element={<Navigate to="/login" />} />
         )
         }
-        <Route path='/register' element={!user ? <Register /> : <Navigate to={'/'} />} />
         <Route path='/login' element={!user ? <Login /> : <Navigate to={'/'} />} />
       </Routes>
       </div>
