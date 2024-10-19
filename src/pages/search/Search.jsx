@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState, useCallback } from 'react';
 import axiosInstance from '../../api/axiosInstance';
-import Navbar from '../../components/navbar/Navbar';
 import './search.scss';
 import { useNavigate } from 'react-router-dom';
 import { HistoryContext } from '../../context/historyContext/HistoryContext';

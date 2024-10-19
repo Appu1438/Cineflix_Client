@@ -11,9 +11,17 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, watchedPortion, setWatchedPortion 
     const progressBarRef = useRef(null);
     const offscreenVideoRef = useRef(null);
     const CustomControlRef = useRef(null)
-
-    const [currentQuality, setCurrentQuality] = useState('360p');
     const [autoQuality, setAutoQuality] = useState('360p');
+    const [currentQuality, setCurrentQuality] = useState(() => {
+        const quality = localStorage.getItem('quality');
+        if (quality === 'Auto') {
+            return autoQuality;
+        } else if (quality) {
+            return quality;
+        } else {
+            return '360p';
+        }
+    });
     const [networkSpeed, setNetworkSpeed] = useState(null);
     const [showQualityOptions, setShowQualityOptions] = useState(false);
     const [hoveredTime, setHoveredTime] = useState(null);
@@ -30,6 +38,8 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, watchedPortion, setWatchedPortion 
     useEffect(() => {
         // Function to check network speed and quality
         const checkNetworkQuality = () => {
+            let quality;
+            let networkSpeed;
             if (navigator.connection) {
                 const { effectiveType, rtt, downlink } = navigator.connection;
                 console.log('Effective network type:', effectiveType);
@@ -37,17 +47,47 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, watchedPortion, setWatchedPortion 
 
                 // Use RTT and Downlink to determine network quality
                 if (rtt > 300 || downlink < 1) {
-                    setNetworkSpeed('verylow'); // Bad quality
+                    networkSpeed = 'verylow'
                 } else if (rtt > 150 || downlink < 3) {
-                    setNetworkSpeed('low');
+                    networkSpeed = 'low'
                 } else if (rtt > 100 || downlink < 5) {
-                    setNetworkSpeed('moderate');
+                    networkSpeed = 'moderate'
                 } else {
-                    setNetworkSpeed('high');
+                    networkSpeed = 'high'
                 }
             } else {
                 // Fallback if navigator.connection is not available
-                setNetworkSpeed('high');
+                networkSpeed = 'high'
+            }
+
+            setNetworkSpeed(networkSpeed)
+
+            if (networkSpeed) {
+                if (networkSpeed === 'verylow') {
+                    quality = '360p';
+                } else if (networkSpeed === 'low') {
+                    quality = '480p';
+                } else if (networkSpeed === 'moderate') {
+                    quality = '720p';
+                } else if (networkSpeed === 'high') {
+                    // If the network is very strong or if additional logic is needed to detect 1080p availability
+                    quality = '1080p';
+                }
+                setAutoQuality(quality);
+                console.log('Quality based on speed:', quality);
+                if (currentQuality == 'Auto') {
+                    if (quality != autoQuality) {
+                        console.log('Quality is not Same')
+                        const currentTime = videoRef.current.currentTime;
+                        videoRef.current.src = `${STREAM_URL}?filename=${videoUrl}&quality=${quality}`;
+                        offscreenVideoRef.current.src = `${STREAM_URL}?filename=${videoUrl}&quality=${quality}`;
+                        videoRef.current.currentTime = currentTime;
+                        videoRef.current.play();
+                    } else {
+                        console.log('Quality is Same')
+                    }
+                }
+
             }
         };
 
@@ -59,30 +99,13 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, watchedPortion, setWatchedPortion 
 
         // Cleanup interval on component unmount
         return () => clearInterval(intervalId);
-    }, []);
-
-    useEffect(() => {
-        // Change quality based on network speed if Auto is enabled
-        if (networkSpeed) {
-            let quality;
-            if (networkSpeed === 'verylow') {
-                quality = '360p';
-            } else if (networkSpeed === 'low') {
-                quality = '480p';
-            } else if (networkSpeed === 'moderate') {
-                quality = '720p';
-            } else if (networkSpeed === 'high') {
-                // If the network is very strong or if additional logic is needed to detect 1080p availability
-                quality = '1080p';
-            }
-            console.log('Quality based on speed:', quality);
-            setAutoQuality(quality);
-        }
-    }, [networkSpeed]);
+    }, [autoQuality,currentQuality]);
 
 
     const handleQualityChange = (newQuality) => {
         const currentTime = videoRef.current.currentTime;
+
+        localStorage.setItem('quality', newQuality)
 
         if (newQuality === 'Auto') {
             setCurrentQuality('Auto');
