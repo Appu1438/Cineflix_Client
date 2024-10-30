@@ -20,17 +20,18 @@
     width: 90px;
 }
 
-.navbar-left ul {
+.desktop-menu {
     display: flex;
     list-style: none;
     gap: 20px;
 }
 
-.navbar-left ul li {
+.desktop-menu li {
     cursor: pointer;
 }
 
 .navbar-right {
+    margin-right: 10px; /* Adds spacing from the right edge */
     display: flex;
     gap: 20px;
     align-items: center;
@@ -42,12 +43,16 @@
 }
 
 .navbar-right .profile {
-    border-radius: 4px;
+    border-radius: 5px;
     width: 40px;
     object-fit: cover;
     height: 30px;
 }
-
+.navbar-right .icons,
+.navbar-right .profile {
+    margin-right: 10px; /* Optional: adds consistent spacing between icons */
+    cursor: pointer;
+}
 .navbar-profile {
     display: flex;
     align-items: center;
@@ -82,27 +87,78 @@
     background: #141414;
 }
 
-@media (max-width: 800px) {
-    .navbar {
-        padding: 20px 4%;
-    }
+// Mobile menu and hamburger styles
+.hamburger {
+    margin-right: 10px; /* Adds spacing from the right edge */
 
-    .navbar-left ul {
-        display: none;
-    }
+    display: none;
+    opacity: 0;
+    cursor: pointer;
+}
+.mobile-menu {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: #191919;
+    z-index: 99;
+    padding: 0; // Remove padding here
+    align-items: center;
+}
 
-    .navbar img {
-        height: 25px;
-    }
+.mobile-menu.open {
+    max-height: 200px; // Adjust based on content height
+    padding: 10px 0; // Add padding here for expanded state
 }
 
 
+.mobile-menu li {
+    overflow: hi;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+.mobile-menu .user-profile {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    color: #e5e5e5;
+    font-weight: bold;
+}
+
+.profile-icon {
+    margin-right: 8px; // Space between icon and username
+    font-size: 24px; // Adjust icon size as needed
+}
+
+
+
+
 @media (max-width: 800px) {
+    .navbar-left img {
+        height: 25px;
+    }
+
+    .desktop-menu {
+        display: none;
+    }
+
+    .hamburger {
+        opacity: 1;
+        display: block;
+    }
+
     .navbar img {
         height: 20px;
     }
 
     .navbar-right {
-        gap: 10px;
+        gap: 10px; /* Reduces gap for a more compact mobile view */
+        margin-right: 15px; /* Adds some space from the right edge */
     }
 }
