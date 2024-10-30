@@ -139,25 +139,7 @@ export default function Icons({ movie }) {
                 <span className="iconLabel">Dislike </span>
                 {movie.dislikes ? formatCount(movie.dislikes) : ""}
             </div>
-            <div className="iconContainer" onClick={toggleShare}>
-                <Share className="icon" />
-                <span className="iconLabel">Share </span>
-            </div>
-
-            {/* Share options display */}
-            {shareOpen && (
-                <div className="shareOptions">
-                    <FacebookShareButton url={shareUrl} quote={shareDescription} hashtag="#Movie">
-                        <FacebookIcon size={32} round />
-                    </FacebookShareButton>
-                    <TwitterShareButton url={shareUrl} title={shareTitle}>
-                        <TwitterIcon size={32} round />
-                    </TwitterShareButton>
-                    <WhatsappShareButton url={shareUrl} title={shareTitle} >
-                        <WhatsappIcon size={32} round />
-                    </WhatsappShareButton>
-                </div>
-            )}
+           
         </div>
     )
 }

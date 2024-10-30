@@ -1,7 +1,7 @@
 .icons {
     display: flex;
     flex-wrap: wrap;
-    gap: 15px;
+    gap: 10px;
     position: relative; // Add this to position the share options relative to icons
     // align-items: center;
     justify-content: center;
@@ -16,9 +16,9 @@
 
         .icon {
             border: 2px solid white;
-            padding: 15px;
+            padding: 10px;
             border-radius: 50%;
-            font-size: 20px;
+            font-size: 15px;
             transition: background-color 0.3s ease, color 0.3s ease;
             color: white;
         }
@@ -32,7 +32,7 @@
 
         .iconLabel {
             margin-top: 10px;
-            font-size: 0.9rem;
+            font-size: 0.7rem;
             color: white;
             transition: color 0.3s;
         }

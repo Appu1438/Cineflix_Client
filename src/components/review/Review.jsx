@@ -221,7 +221,7 @@ export const ReviewsComponent = ({ id, user, reviews, setReviews }) => {
                     <textarea
                         value={newReview}
                         onChange={(e) => setNewReview(e.target.value)}
-                        placeholder="Submit your review here to Add or Update Your Review"
+                        placeholder="Submit your review"
                     />
                     <button onClick={handleAddReview}>Submit Review</button>
                 </div>

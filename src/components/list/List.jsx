@@ -1,87 +1,77 @@
 
 import './list.scss';
 import { useRef, useState, useEffect } from 'react';
-import ListItem from '../listItem/ListItem';
+import { Link } from 'react-router-dom';
+import axiosInstance from '../../api/axiosInstance';
 
 const List = ({ list }) => {
     const listRef = useRef();
+    const [movies, setMovies] = useState([]);
+    const cardsRef = useRef();
 
-    const [isScrolling, setIsScrolling] = useState(false);
-
-    // Variable to track if scrolling has stopped
-    let scrollTimeout;
-
-    // Function to handle scroll event
-    const handleScroll = () => {
-        // Set scrolling to true
-        setIsScrolling(true);
-
-        // Clear the previous timeout if any
-        if (scrollTimeout) {
-            clearTimeout(scrollTimeout);
-        }
-
-        // Set a timeout to determine when scrolling has stopped
-        scrollTimeout = setTimeout(() => {
-            setIsScrolling(false);
-        }, 500); // Adjust the delay as needed (150ms is a common choice)
+    const handleScrollLeft = () => {
+        cardsRef.current.scrollBy({ left: -240, behavior: 'smooth' });
     };
 
+    const handleScrollRight = () => {
+        cardsRef.current.scrollBy({ left: 240, behavior: 'smooth' });
+    };
+
+    const handleWheel = (event) => {
+        event.preventDefault();
+        cardsRef.current.scrollLeft += event.deltaY;
+    };
+
+    // Fetch movie data for each item in the list
     useEffect(() => {
-        const container = listRef.current;
+        const controller = new AbortController();
+        const { signal } = controller;
 
-        if (container) {
-            container.addEventListener('scroll', handleScroll);
+        const getMovies = async () => {
+            try {
+                const moviePromises = list.content.map(async (item) => {
+                    const response = await axiosInstance.get(`movies/find/${item.movieId ? item.movieId : item}`, { signal });
+                    return response.data;
+                });
 
-            return () => {
-                container.removeEventListener('scroll', handleScroll);
-                if (scrollTimeout) {
-                    clearTimeout(scrollTimeout);
+                const movieData = await Promise.all(moviePromises);
+                setMovies(movieData);
+            } catch (error) {
+                if (error.name === 'CanceledError') {
+                    console.log('Request canceled', error.message);
+                } else {
+                    console.error(error);
                 }
-            };
+            }
+        };
+
+        getMovies();
+        if (cardsRef.current) {
+            cardsRef.current.addEventListener("wheel", handleWheel);
         }
-    }, []);
-    // Enable manual horizontal scrolling
-    const handleMouseDown = (e) => {
-        const scrollElement = listRef.current;
-        scrollElement.isDown = true;
-        scrollElement.startX = e.pageX - scrollElement.offsetLeft;
-        scrollElement.scrollLeft = scrollElement.scrollLeft;
-    };
 
-    const handleMouseMove = (e) => {
-        const scrollElement = listRef.current;
-        if (!scrollElement.isDown) return;
-        e.preventDefault();
-        const x = e.pageX - scrollElement.offsetLeft;
-        const walk = (x - scrollElement.startX) * 2; // Adjust scrolling speed
-        scrollElement.scrollLeft = scrollElement.scrollLeft - walk;
-    };
-
-    const handleMouseUp = () => {
-        listRef.current.isDown = false;
-    };
-
-    const handleMouseLeave = () => {
-        listRef.current.isDown = false;
-    };
+        return () => {
+            controller.abort();
+            if (cardsRef.current) {
+                cardsRef.current.removeEventListener("wheel", handleWheel);
+            }
+        };
+    }, [list]);
 
     return (
-        <div className="list">
-            <span className="listTitle">{list.title}</span>
-            <div
-                className="wrapper"
-                ref={listRef}
-                onMouseDown={handleMouseDown}
-                onMouseMove={handleMouseMove}
-                onMouseUp={handleMouseUp}
-                onMouseLeave={handleMouseLeave}
-            >
-                <div className="container">
-                    {list?.content?.map((item, index) => (
-                        <ListItem index={index} item={item.movieId ? item.movieId : item} key={index} scrolled={isScrolling} />
+        <div className="title-cards">
+            <h2>{list?.title || "Popular on Cineflix"}</h2>
+            <div className="card-container">
+                <button className="scroll-btn left" onClick={handleScrollLeft}>{"<"}</button>
+                <div className="card-list" ref={cardsRef}>
+                    {movies.map((movie, index) => (
+                        <Link to={`/info/${movie._id}`} className="card" key={index}>
+                            <img src={movie?.imgsm} alt={movie?.title} />
+                            <p>{movie?.title}</p>
+                        </Link>
                     ))}
                 </div>
+                <button className="scroll-btn right" onClick={handleScrollRight}>{">"}</button>
             </div>
         </div>
     );

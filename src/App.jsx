@@ -44,6 +44,7 @@ function App() {
           <Route path="*" element={<Navigate to="/login" />} />
         )
         }
+        <Route path='/register' element={!user ? <Register /> : <Navigate to={'/'} />} />
         <Route path='/login' element={!user ? <Login /> : <Navigate to={'/'} />} />
       </Routes>
       </div>

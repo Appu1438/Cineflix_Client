@@ -1,43 +1,131 @@
-.list {
-    width: 100%;
+.title-cards {
     margin-top: 20px;
-    margin-bottom: 20px;
-    color: white;
-    overflow: hidden;
-    position: relative;
-    /* Hide overflowing content */
+    margin-bottom: 10px;
+    padding: 0 20px; // Adds space on the sides for the title as well
 
-    .listTitle {
+    h2 {
+        margin-bottom: 8px;
+        color: white;
         font-size: 24px;
-        margin-left: 65px;
-        margin-bottom: 10px;
-        font-weight: bold;
-        text-transform: uppercase;
+        margin-left: 10px; // Optional: adds a slight margin to the left for the title
+    }
+}
+
+.card-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 0; // Remove side padding here
+}
+
+.card-list {
+    display: flex;
+    gap: 10px;
+    overflow-x: scroll;
+    scroll-behavior: smooth;
+    padding: 20px 0; // Vertical padding for better spacing
+    margin: 0 0px; // Space on the left and right of the list container
+    padding-left: 20px; // Add padding on the left side for the first element
+}
+
+
+.scroll-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    font-size: 24px;
+    padding: 0px;
+    cursor: pointer;
+    display: none;
+    z-index: 10;
+
+    &.left {
+        left: 0;
     }
 
-    .wrapper {
-        position: relative;
-        width: 100%;
-        display: flex;
-        overflow-x: scroll;
-        /* Enable scrolling */
-        scroll-behavior: smooth;
-        /* Smooth scrolling */
-        -webkit-overflow-scrolling: touch;
+    &.right {
+        right: 0;
+    }
 
-       
-        .container {
-            padding: 0 70px;
-            /* Padding for both sides */
-            display: flex;
-            position: relative;
-            width: max-content;
-            margin-top: 10px;
-            transform: translateX(0px);
-            transition: transform 0.5s ease-in-out;
+    &:hover {
+        background-color: rgba(0, 0, 0, 0.8);
+    }
+}
+
+.card-container:hover .scroll-btn {
+    display: block;
+}
+
+
+
+.card-list::-webkit-scrollbar {
+    display: none;
+}
+
+.card {
+    position: relative;
+    width: 240px;
+    flex: 0 0 auto;
+    transition: transform 0.3s;
+
+    &:hover {
+        transform: scale(1.05);
+        z-index: 5;
+    }
+
+    img {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    p {
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        font-size: 16px;
+        color: #fff;
+        text-shadow: 0 2px 5px rgba(0, 0, 0, 0.8);
+    }
+}
+
+@media (max-width: 800px) {
+    .title-cards h2 {
+        font-size: 20px;
+    }
+
+    .card {
+        width: 200px;
+
+        img {
+            height: 130px;
+        }
+
+        p {
+            font-size: 14px;
         }
     }
 }
-::-webkit-scrollbar {
-    display: none; /* Hide scrollbar */
-  }
+
+@media (max-width: 500px) {
+    .title-cards h2 {
+        font-size: 18px;
+    }
+
+    .card {
+        width: 160px;
+
+        img {
+            height: 120px;
+        }
+
+        p {
+            font-size: 12px;
+        }
+    }
+}
