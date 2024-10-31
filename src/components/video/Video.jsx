@@ -99,7 +99,7 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, watchedPortion, setWatchedPortion 
 
         // Cleanup interval on component unmount
         return () => clearInterval(intervalId);
-    }, [autoQuality,currentQuality]);
+    }, [autoQuality, currentQuality]);
 
 
     const handleQualityChange = (newQuality) => {
@@ -151,6 +151,13 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, watchedPortion, setWatchedPortion 
     const handleClickOutside = (event) => {
         if (overlayRef.current && !overlayRef.current.contains(event.target)) {
             setShowQualityOptions(false);
+        }
+
+        if (CustomControlRef.current && !CustomControlRef.current.contains(event.target)) {
+            CustomControlRef.current.style.opacity = '0'
+        }
+        if (progressBarRef.current && !progressBarRef.current.contains(event.target)) {
+            progressBarRef.current.style.opacity = '0'
         }
     };
 
@@ -241,6 +248,8 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, watchedPortion, setWatchedPortion 
             progressBarRef.current.style.opacity = '0';
         }
     };
+
+
     const showCustomControls = () => {
         CustomControlRef.current.style.opacity = '1'
     };
@@ -401,19 +410,6 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, watchedPortion, setWatchedPortion 
                     <Forward10 className='customIcons' style={{ fontSize: '50px' }} />
                 </button>
             </div>
-
-
-            {/* {showSkipAnimation && (
-                <motion.div
-                    className="skipAnimation"
-                    initial={{ opacity: 0, scale: 0.5 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 1.2 }}
-                    transition={{ duration: 0.5, ease: 'easeInOut' }}
-                >
-                    {skipMessage}
-                </motion.div>
-            )} */}
 
             <video
                 ref={offscreenVideoRef}

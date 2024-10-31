@@ -34,44 +34,45 @@
     margin-bottom: 10px;
 }
 
-
 .customControls {
     position: absolute;
-    top: 0;
-    bottom: 0;
+    top: 44%;
     left: 50%;
-    width: 50%;
-    transform: translateX(-50%);
+    transform: translate(-50%, -50%);
     display: flex;
     justify-content: space-evenly;
-    align-self: center;
+    width: 80%;
+    max-width: 300px;
     gap: 20px;
     z-index: 10;
-    transition: opacity 0.5s ease-in-out;
-    // background-color: red;
-    height: 100px;
     opacity: 0;
-
+    transition: opacity 0.3s ease-in-out;
 }
 
 .skipLeftButton,
 .pauseButton,
 .skipRightButton {
     background-color: inherit;
-    width: 100%;
     color: white;
     border: none;
     padding: 10px;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 25px;
-    /* Keep this for text */
     transition: background-color 0.3s ease;
 }
 
 .customIcons {
-    font-size: 40px;
-    /* Increase the icon size here */
+    font-size: 20px;
+}
+
+@media (max-width: 768px) {
+    .customIcons {
+        font-size: 15px;
+    }
+
+    .customControls {
+        gap: 10px;
+    }
 }
 
 .skipAnimation {

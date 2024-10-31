@@ -30,7 +30,20 @@ const Featured = ({ type, setGenre }) => {
     const getRandomContent = async () => {
       try {
         const response = await axiosInstance.get(`movies/random?type=${type}`);
-        setContent(response.data);
+
+        // Log the response data for debugging
+        console.log('Response data:', response.data);
+
+        // Filter to ensure valid content
+        const validContent = response.data.filter(item => item && item.img && item.imgTitle);
+
+        // Limit to the first 5 valid items
+        const limitedContent = validContent.slice(0, 5);
+
+        // Log the valid content for debugging
+        console.log('Limited content:', limitedContent);
+
+        setContent(limitedContent);
         setLoading(false);
       } catch (error) {
         console.error('Error fetching content:', error);
@@ -50,24 +63,25 @@ const Featured = ({ type, setGenre }) => {
           transitionDuration={2000}
           duration={3000}
           easing='ease'
-        >          {content?.map((slide, index) => (
-          <div className="hero" key={index}>
-            <img src={slide.img} alt="" className="banner-img" />
-            <div className="hero-caption">
-              <img src={slide.imgTitle} alt="" className="caption-img" />
-              <div className="hero-btns">
-                <Link to={`/watch/${slide._id}`} className="btn link">
-                  <PlayArrowIcon />
-                  Play
-                </Link>
-                <Link to={`/info/${slide._id}`} className="btn dark-btn link">
-                  <InfoOutlinedIcon />
-                  More Info
-                </Link>
+        >
+          {content.length > 0 && content.map((slide, index) => (
+            <div className="hero" key={index}>
+              <img src={slide.img} alt="" className="banner-img" />
+              <div className="hero-caption">
+                <img src={slide.imgTitle} alt="" className="caption-img" />
+                <div className="hero-btns">
+                  <Link to={`/watch/${slide._id}`} className="btn link">
+                    <PlayArrowIcon />
+                    Play
+                  </Link>
+                  <Link to={`/info/${slide._id}`} className="btn dark-btn link">
+                    <InfoOutlinedIcon />
+                    More Info
+                  </Link>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
         </Slide>
       )}
     </div>
