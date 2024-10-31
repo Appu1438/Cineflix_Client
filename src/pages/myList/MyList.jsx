@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../../context/authContext/AuthContext';
 import './myList.scss';
 import List from '../../components/list/List';
@@ -11,13 +11,18 @@ import { WatchLaterContext } from '../../context/watchLaterContext/WatchLaterCon
 import { get_User_WatchLater } from '../../context/watchLaterContext/apiCalls';
 import { LikesContext } from '../../context/likesContext/LikesContext';
 import { get_User_Likes } from '../../context/likesContext/apiCalls';
+import Modal from '../../components/modal/Modal'; // Import the Modal component
+import axiosInstance from '../../api/axiosInstance';
+import { updateUser } from '../../context/authContext/apiCalls';
 
 export default function MyList() {
-    const { user } = useContext(AuthContext);
+    const { user, dispatch: dispatchUser } = useContext(AuthContext);
     const { fav, dispatch: dispatchFav } = useContext(FavContext);
     const { history, dispatch: dispatchHistory } = useContext(HistoryContext);
     const { watch, dispatch: dispatchWatchLater } = useContext(WatchLaterContext);
     const { likes, dispatch: dispatchLikes } = useContext(LikesContext);
+
+    const [isModalOpen, setIsModalOpen] = useState(false); // State to manage modal visibility
 
     useEffect(() => {
         get_User_Fav(user._id, dispatchFav);
@@ -36,8 +41,16 @@ export default function MyList() {
     }, [dispatchLikes, user._id]);
 
     const handleEdit = () => {
-        // Define what happens when edit button is clicked (e.g., open a modal or navigate to an edit profile page)
-        console.log('Edit button clicked!');
+        setIsModalOpen(true); // Open the modal when edit button is clicked
+    };
+
+    const handleModalClose = () => {
+        setIsModalOpen(false); // Close the modal
+    };
+
+
+    const handleProfileUpdate = async (updatedData) => {
+        updateUser(updatedData, dispatchUser)
     };
 
     // Scroll to top
@@ -47,6 +60,8 @@ export default function MyList() {
             behavior: 'smooth' // This enables smooth scrolling
         });
     }, []);
+
+    
 
     return (
         <div className="my-list">
@@ -69,17 +84,19 @@ export default function MyList() {
                 <button className="edit-button" onClick={handleEdit}>Edit Profile</button>
             </div>
 
-            {fav?.content?.length > 0 ?
-                (<List list={fav} />) : (null)}
-            {history?.content?.length > 0 ?
-                (<List list={history} />) : (null)}
-            {watch?.content?.length > 0 ?
-                (<List list={watch} />) : (null)}
-            {likes?.likes?.content?.length > 0 ?
-                (<List list={likes.likes} />) : (null)}
-            {likes?.dislikes?.content?.length > 0 ?
-                (<List list={likes.dislikes} />) : (null)}
+            {fav?.content?.length > 0 ? (<List list={fav} />) : (null)}
+            {history?.content?.length > 0 ? (<List list={history} />) : (null)}
+            {watch?.content?.length > 0 ? (<List list={watch} />) : (null)}
+            {likes?.likes?.content?.length > 0 ? (<List list={likes.likes} />) : (null)}
+            {likes?.dislikes?.content?.length > 0 ? (<List list={likes.dislikes} />) : (null)}
 
+            {/* Modal for Editing Profile */}
+            <Modal
+                isOpen={isModalOpen}
+                onClose={handleModalClose}
+                user={user}
+                onSubmit={handleProfileUpdate}
+            />
         </div>
     );
 }

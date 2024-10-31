@@ -1,6 +1,6 @@
 
 import axios from 'axios'
-import { fetchUserFailure, fetchUserStart, fetchUserSuccess, loginFailure, loginStart, loginSuccess } from './AuthAction'
+import { fetchUserFailure, fetchUserStart, fetchUserSuccess, loginFailure, loginStart, loginSuccess, updateFailure, updateStart, updateSuccess } from './AuthAction'
 import axiosInstance from '../../api/axiosInstance'
 import { REACT_APP_API_URL } from '../../api';
 
@@ -39,6 +39,29 @@ export const logout = async () => {
 
 }
 
+    export const updateUser = async (data, dispatch) => {
+        console.log(data)
+        dispatch(updateStart())
+        const localUser = JSON.parse(localStorage.getItem('user'));
+        try {
+            const updatedUserResponse = await axiosInstance.put(`users/${localUser._id}`, data);
+            const updatedProfile = updatedUserResponse.data;
+            // Merge the existing access and refresh tokens with the updated profile data
+            const mergedUser = {
+                ...localUser, // Retain accessToken and refreshToken from localUser
+                ...updatedProfile // Override other profile details from updated response
+            };
+
+            dispatch(updateSuccess(mergedUser))
+            // localStorage.setItem('user', JSON.stringify(mergedUser));
+            console.log('Updated user details:', mergedUser);
+
+        } catch (error) {
+            dispatch(updateFailure())
+            console.log('Error fetching updated user data:', error);
+        }
+
+    }
 
 export const fetchUserDetailsIfOutdated = async (dispatch) => {
     dispatch(fetchUserStart())

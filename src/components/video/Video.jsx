@@ -129,24 +129,24 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, watchedPortion, setWatchedPortion 
         }
     };
 
-    useEffect(() => {
-        const fetchSubtitle = async () => {
-            try {
-                if (subtitleUrl) {
-                    const SubtitleResponse = await fetch(subtitleUrl);
-                    const SubtitleBlob = await SubtitleResponse.blob();
-                    const SubtitleBloburl = URL.createObjectURL(SubtitleBlob);
-                    if (subtitleRef.current) {
-                        subtitleRef.current.src = SubtitleBloburl;
-                    }
-                }
-            } catch (error) {
-                console.error('Error fetching subtitle:', error);
-            }
-        };
+    // useEffect(() => {
+    //     const fetchSubtitle = async () => {
+    //         try {
+    //             if (subtitleUrl) {
+    //                 const SubtitleResponse = await fetch(subtitleUrl);
+    //                 const SubtitleBlob = await SubtitleResponse.blob();
+    //                 const SubtitleBloburl = URL.createObjectURL(SubtitleBlob);
+    //                 if (subtitleRef.current) {
+    //                     subtitleRef.current.src = SubtitleBloburl;
+    //                 }
+    //             }
+    //         } catch (error) {
+    //             console.error('Error fetching subtitle:', error);
+    //         }
+    //     };
 
-        fetchSubtitle();
-    }, [subtitleUrl]);
+    //     fetchSubtitle();
+    // }, [subtitleUrl]);
 
     const handleClickOutside = (event) => {
         if (overlayRef.current && !overlayRef.current.contains(event.target)) {
@@ -389,7 +389,7 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, watchedPortion, setWatchedPortion 
                 onMouseEnter={showCustomControls}
                 onMouseLeave={hideCustomControls}
             >
-                <track ref={subtitleRef} kind="subtitles" />
+                <track ref={subtitleRef} src={subtitleUrl} kind="subtitles" />
 
             </video>
 
