@@ -128,7 +128,6 @@ const VideoPlayer = ({ videoUrl, subtitleUrl, watchedPortion, setWatchedPortion 
             }, 100);
         }
     };
-
     // useEffect(() => {
     //     const fetchSubtitle = async () => {
     //         try {
