@@ -94,7 +94,7 @@ const MovieInfo = () => {
 
                     {/* Reviews Section */}
                     <div className="reviewsSection">
-                        <h2>Reviews {movie.reviewcount !== undefined ? `(${formatCount(movie.reviewcount)})` : ""}</h2>
+                        <h3>Reviews {movie.reviewcount !== undefined ? `(${formatCount(movie.reviewcount)})` : ""}</h3>
                         <ReviewsComponent id={id} user={user} reviews={reviews} setReviews={setReviews} />
                     </div>
 

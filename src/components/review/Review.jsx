@@ -26,24 +26,24 @@ export const ReviewsComponent = ({ id, user, reviews, setReviews }) => {
     // Fetch reviews for the movie
     useEffect(() => {
         if (!id) return; // Check if movie ID is available
-    
+
         const controller = new AbortController();
         const { signal } = controller;
-    
+
         const fetchReviews = async () => {
             try {
                 const response = await axiosInstance.get(`movies/review/${id}`, { signal });
                 const fetchedReviews = response.data;
-    
+
                 // Check if the current user has an existing review
                 const currentUserReview = fetchedReviews.find(review => review.userId === user._id);
-    
+
                 // If the current user's review is found, move it to the top
                 if (currentUserReview) {
                     // Filter out the current user's review and add it to the front
                     const otherReviews = fetchedReviews.filter(review => review.userId !== user._id);
                     const updatedReviews = [currentUserReview, ...otherReviews];
-    
+
                     setReviews(updatedReviews); // Set the new order of reviews
                     setNewReview(currentUserReview.review); // Set the current user's review for editing
                     setRating(currentUserReview.rating); // Set the current user's rating for editing
@@ -57,14 +57,14 @@ export const ReviewsComponent = ({ id, user, reviews, setReviews }) => {
                 console.error('Failed to fetch reviews:', error);
             }
         };
-    
+
         fetchReviews();
-    
+
         return () => {
             controller.abort();
         };
     }, [id, user._id]); // Added user._id as a dependency to ensure it re-runs if the user changes
-    
+
 
     // Handle star rating for new review
     const onStarClick = (nextValue) => {
@@ -111,9 +111,6 @@ export const ReviewsComponent = ({ id, user, reviews, setReviews }) => {
                     );
                 }
             });
-
-            setNewReview('');
-            setRating(0);
         } catch (error) {
             toast.error('Failed to add/update review!');
         }
@@ -179,15 +176,19 @@ export const ReviewsComponent = ({ id, user, reviews, setReviews }) => {
                                     <strong>{review.userName}</strong>
                                     <div className="reviewStar">
                                         <StarComponent rating={review.rating} />
-                                        {review.userId === user._id || user.isAdmin ? (
-                                            <Delete className="deleteBtn" onClick={() => handleDltReview(review._id)} />
-                                        ) : (null)}
+
                                     </div>
                                 </div>
                                 <p>{review.review}</p>
-                                <h4 className="reviewTimestamp">
-                                    Reviewed on: {format(new Date(review.updatedAt), 'MMMM d, yyyy h:mm a')}
-                                </h4>
+                                <div className='timestampContainer'>
+
+                                    <h4 className="reviewTimestamp">
+                                        Reviewed on: {format(new Date(review.updatedAt), 'MMMM d, yyyy h:mm a')}
+                                    </h4>
+                                    {review.userId === user._id || user.isAdmin ? (
+                                        <Delete className="deleteBtn" onClick={() => handleDltReview(review._id)} />
+                                    ) : (null)}
+                                </div>
                             </div>
                         ))}
 
@@ -208,7 +209,7 @@ export const ReviewsComponent = ({ id, user, reviews, setReviews }) => {
                 )}
 
                 <div className="addReview">
-                    <h3>Add Your Review</h3>
+                    <h1>Add Your Review</h1>
                     <StarRatingComponent
                         name="rateMovie"
                         starCount={5}

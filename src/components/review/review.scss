@@ -12,7 +12,7 @@
         margin-bottom: 10px;
 
         strong {
-            font-size: 1.2rem;
+            font-size: 1rem;
             color: #f39c12;
         }
 
@@ -21,25 +21,7 @@
             flex-direction: column;
             position: relative;
 
-            .deleteBtn {
-                align-self: flex-end;
-                background-color: #e50914;
-                color: white;
-                border: none;
-                border-radius: 5px;
-                padding: 8px 16px;
-                cursor: pointer;
-                font-size: 0.9rem;
-                font-weight: bold;
-                position: absolute;
-                top: 20px;
-                transition: background-color 0.3s;
-                margin-top: 10px;
 
-                &:hover {
-                    background-color: #d40813;
-                }
-            }
         }
     }
 
@@ -49,10 +31,36 @@
         line-height: 1.5;
     }
 
-    .reviewTimestamp {
-        font-size: .8rem;
-        color: #bbb;
-        margin-top: 0px;
+    .timestampContainer {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+
+        .reviewTimestamp {
+            font-size: .8rem;
+            color: #bbb;
+            margin-top: 0px;
+
+        }
+
+        .deleteBtn {
+            align-self: flex-end;
+            background-color: #e50914;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: bold;
+            position: absolute;
+            transition: background-color 0.3s;
+            top: -5px;
+
+            &:hover {
+                background-color: #d40813;
+            }
+        }
     }
 
 
@@ -69,8 +77,9 @@
     border-radius: 10px;
     position: relative;
 
-    h3 {
-        font-size: 1.8rem;
+    h1 {
+        align-self: flex-start;
+        font-size: 1.2rem;
         font-weight: 600;
         color: #f39c12;
         margin-bottom: 10px;
@@ -79,7 +88,8 @@
     .starRatingInput {
         display: flex;
         justify-content: center;
-        font-size: 2.5rem;
+        align-self: flex-start;
+        font-size: 2rem;
         position: absolute;
         /* Increase the size of the stars */
         margin-bottom: 15px;
