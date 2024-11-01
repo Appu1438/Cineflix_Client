@@ -1,72 +1,61 @@
-// src/components/modal/Modal.js
 import React, { useRef, useState } from 'react';
-import './modal.scss'; // Add your styles for the modal
-import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from "firebase/storage";
+import './modal.scss';
+import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from "firebase/storage";
 import storage from '../../firebase';
 
 const Modal = ({ isOpen, onClose, user, onSubmit }) => {
     const [username, setUsername] = useState(user.username);
     const [profilePic, setProfilePic] = useState(user.profilePic);
+    const [profilePicPreview, setProfilePicPreview] = useState(user.profilePic);
     const [password, setPassword] = useState('');
-    const [showConfirmDelete, setShowConfirmDelete] = useState(false); // New state for confirmation
-    const fileInputRef = useRef(null); // Reference for file input
+    const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+    const [selectedFile, setSelectedFile] = useState(null);
 
-    const handleSubmit = (e) => {
+    const fileInputRef = useRef(null);
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Create an object to hold the updated data
-        const updatedData = { username, profilePic };
+        let profilePicUrl = profilePic;
 
-        // Only add password if it is provided
-        if (password) {
-            updatedData.password = password;
+        if (selectedFile) {
+            console.log('Uploading New Pic')
+            const filename = new Date().getTime() + selectedFile.name;
+            const storageRef = ref(storage, `items/${filename}`);
+            const uploadTask = await uploadBytesResumable(storageRef, selectedFile);
+            profilePicUrl = await getDownloadURL(uploadTask.ref);
+
+            if (user.profilePic) {
+                handleDeleteProfileImage(); // Delete old image if exists
+            }
         }
-        if(profilePic==null){
+
+        if (profilePic == null && user.profilePic && !selectedFile) {
             handleDeleteProfileImage()
         }
 
-        // Call the onSubmit function passed from MyList with the new data
+        const updatedData = { username, profilePic: profilePicUrl };
+
+        if (password) {
+            updatedData.password = password;
+        }
+
         onSubmit(updatedData);
-        onClose(); // Close the modal after submission
+        onClose();
     };
+
     const handleProfileChange = (e) => {
         const image = e.target.files[0];
-        if (!image) return; // Early return if no image is selected
-
-        const filename = new Date().getTime() + image.name;
-        const storageRef = ref(storage, `items/${filename}`);
-
-        const uploadTask = uploadBytesResumable(storageRef, image);
-
-        // Monitor the upload progress
-        uploadTask.on(
-            'state_changed',
-            (snapshot) => {
-                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                console.log(`Upload is ${progress}% done`);
-
-                switch (snapshot.state) {
-                    case 'paused':
-                        console.log('Upload is paused');
-                        break;
-                    case 'running':
-                        console.log('Upload is running');
-                        break;
-                }
-            },
-            (error) => {
-                console.error('Upload failed:', error);
-            },
-            () => {
-                getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-                    console.log('File available at', downloadURL);
-                    setProfilePic(downloadURL);
-                });
-            }
-        );
+        if (!image) return;
+        setSelectedFile(image);
+        setProfilePicPreview(URL.createObjectURL(image)); // Set preview only
     };
 
-    // Function to delete profile image
+    const handleRemoveProfile = () => {
+        setProfilePicPreview(null)
+        setProfilePic(null)
+
+    }
     const handleDeleteProfileImage = () => {
         const fileRef = ref(storage, user.profilePic);
         deleteObject(fileRef)
@@ -79,7 +68,6 @@ const Modal = ({ isOpen, onClose, user, onSubmit }) => {
             });
     };
 
-
     if (!isOpen) return null;
 
     return (
@@ -89,16 +77,16 @@ const Modal = ({ isOpen, onClose, user, onSubmit }) => {
                 <form onSubmit={handleSubmit}>
                     <div className="profile-image-section">
                         <img
-                            src={profilePic || "https://images.pexels.com/photos/6899260/pexels-photo-6899260.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"}
+                            src={profilePicPreview || "https://images.pexels.com/photos/6899260/pexels-photo-6899260.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500"}
                             alt="Profile"
                             className="profile-image"
-                            onClick={() => fileInputRef.current.click()} // Open file input on click
+                            onClick={() => fileInputRef.current.click()}
                         />
                         <input
                             type="file"
                             ref={fileInputRef}
                             onChange={handleProfileChange}
-                            style={{ display: 'none' }} // Hide file input
+                            style={{ display: 'none' }}
                         />
 
                         {profilePic && (
@@ -113,7 +101,7 @@ const Modal = ({ isOpen, onClose, user, onSubmit }) => {
                                 {showConfirmDelete && (
                                     <div className="confirm-delete">
                                         <p>Are you sure you want to delete this image?</p>
-                                        <button onClick={() => setProfilePic(null)} className="confirm-button">
+                                        <button onClick={handleRemoveProfile} className="confirm-button">
                                             Yes, Delete
                                         </button>
                                         <button
