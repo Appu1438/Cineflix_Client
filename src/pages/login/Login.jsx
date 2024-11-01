@@ -5,14 +5,21 @@ import { AuthContext } from '../../context/authContext/AuthContext';
 import { Link } from 'react-router-dom'
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
+
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const { dispatch } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     login({ email, password }, dispatch);
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prevShowPassword) => !prevShowPassword);
   };
 
   return (
@@ -33,18 +40,26 @@ export default function Login() {
               onChange={(e) => setEmail(e.target.value)}
               required
             />
-            <input
-              type="password"
-              placeholder="Enter Your Password"
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+
+              <input
+                type={showPassword ? 'text' : 'password'}
+                placeholder="Enter Your Password"
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <div className="eyeButton" onClick={togglePasswordVisibility}>
+                {showPassword ? <VisibilityOff /> : <Visibility />}
+              </div>
+
+
             <button className="loginButton" type="submit">
               Sign In
             </button>
-            <span>
-              <Link to={'/register'} className='link'>
 
+            <b className='forgot span'>Forgot password?</b>
+
+            <span className='span'>
+              <Link to={'/register'} className='link'>
                 New to Cineflix? <b>Sign up now.</b>
               </Link>
             </span>

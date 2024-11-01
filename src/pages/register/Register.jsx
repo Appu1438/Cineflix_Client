@@ -4,12 +4,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; // Import CSS for react-toastify
 import axiosInstance from '../../api/axiosInstance';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 export default function Register() {
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,13 +33,18 @@ export default function Register() {
     }
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword((prevShowPassword) => !prevShowPassword);
+  };
+
+
   return (
     <div className="register">
       <div className="container">
         <form onSubmit={handleSubmit}>
           <img className="logo" src="/assests/images/CINEFLIX2.png" alt="Cineflix Logo" />
           <h1>Register</h1>
-          <p>Ready to watch? Enter your email to create your account</p>
+          <p>Enter your email to create your account</p>
           <input
             type="email"
             placeholder="Enter Your Email Address"
@@ -51,11 +58,15 @@ export default function Register() {
             required
           />
           <input
-            type="password"
-            placeholder="Enter Your Password"
+                type={showPassword ? 'text' : 'text'}
+                placeholder="Enter Your Password"
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+          {/* <div className="eyeButton" onClick={togglePasswordVisibility}>
+            {showPassword ? <VisibilityOff /> : <Visibility />}
+          </div> */}
+
           <button className="registerButton" type="submit">
             Sign In
           </button>
