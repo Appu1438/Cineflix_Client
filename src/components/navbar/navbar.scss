@@ -56,7 +56,7 @@
 .navbar-profile {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 20px;
     cursor: pointer;
     position: relative;
 }
@@ -64,24 +64,29 @@
 .navbar .dropdown {
     position: absolute;
     top: 100%;
+    gap: 20px;
     right: 0;
     width: max-content;
     background: #191919;
-    padding: 18px 22px;
+    padding: 10px 25px;
     border-radius: 2px;
-    text-decoration: underline;
+    text-decoration: none;
     z-index: 1;
     display: none;
 }
 
 .navbar .dropdown p {
     font-size: 13px;
+    margin: 10px;
+    gap: 10px;
+    text-decoration: none;
     cursor: pointer;
 }
 
 .navbar-profile:hover .dropdown {
     display: block;
 }
+
 
 .nav-dark {
     background: #141414;

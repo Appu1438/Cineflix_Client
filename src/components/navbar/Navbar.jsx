@@ -64,7 +64,7 @@ const Navbar = () => {
                         alt="" className='profile' />
                     <div className="dropdown">
                         <Link to={'/profile'} className='link'><p>Settings</p></Link>
-                        <p onClick={handleLogout}>Sign Out</p>
+                        <p onClick={handleLogout} className='link'>Sign Out</p>
                     </div>
                 </div>
 
