@@ -6,8 +6,8 @@ import { Link } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import axios from 'axios';
 import axiosInstance from '../../api/axiosInstance';
+import { loginFailure, loginStart, loginSuccess } from '../../context/authContext/AuthAction';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -21,41 +21,62 @@ export default function Login() {
   const { dispatch } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevents page refresh
+
     if (!forgotPassword) {
-      login({ email, password }, dispatch);
-    } else {
-      if (!otpSent) {
-        // Generate OTP
+        dispatch(loginStart());
         try {
-          const response = await axiosInstance.post('auth/generate-otp', { email });
-          setGeneratedOtp(response.data.otp)
-          console.log(generatedOtp)
-          setOtpSent(true);
-          toast.success("OTP sent to your email.");
+            const res = await axiosInstance.post(`auth/login`, { email, password }, { withCredentials: true });
+            toast.success("Login successful.");
+            dispatch(loginSuccess(res.data));
         } catch (error) {
-          toast.error("Failed to generate OTP. Please try again.");
+            console.error('Login error:', error);
+            
+            if (error.response) {
+                if (error.response.status === 401) {
+                    toast.error("Wrong password. Please try again.");
+                } else if (error.response.status === 404) {
+                    toast.error("User not found. Please check your email.");
+                } else {
+                    toast.error("Login failed. Please check your credentials.");
+                }
+            } else {
+                toast.error("An unexpected error occurred. Please try again.");
+            }
+            dispatch(loginFailure()); // Dispatch failure action only after handling error
         }
-      } else {
-        // Verify OTP and reset password
-        console.log(otp, generatedOtp)
-        if (otp == generatedOtp) {
-          try {
-            await axiosInstance.post('auth/reset-password', { email, newPassword });
-            toast.success("Password reset successful. Please log in.");
-            setForgotPassword(false);
-            setOtpSent(false);
-            setNewPassword('');
-            setOtp('');
-          } catch (error) {
-            toast.error("Failed to reset password. Please try again.");
-          }
+    } else {
+        if (!otpSent) {
+            // Generate OTP
+            try {
+                const response = await axiosInstance.post('auth/generate-otp', { email });
+                setGeneratedOtp(response.data.otp);
+                console.log(generatedOtp);
+                setOtpSent(true);
+                toast.success("OTP sent to your email.");
+            } catch (error) {
+                toast.error("Failed to generate OTP. Please try again.");
+            }
         } else {
-          toast.error("Invalid OTP. Please try again.");
+            // Verify OTP and reset password
+            console.log(otp, generatedOtp);
+            if (otp == generatedOtp) {
+                try {
+                    await axiosInstance.post('auth/reset-password', { email, newPassword });
+                    toast.success("Password reset successful. Please log in.");
+                    setForgotPassword(false);
+                    setOtpSent(false);
+                    setNewPassword('');
+                    setOtp('');
+                } catch (error) {
+                    toast.error("Failed to reset password. Please try again.");
+                }
+            } else {
+                toast.error("Invalid OTP. Please try again.");
+            }
         }
-      }
     }
-  };
+};
 
   const togglePasswordVisibility = () => {
     setShowPassword((prevShowPassword) => !prevShowPassword);
@@ -133,7 +154,7 @@ export default function Login() {
               </span>
             ) : (
               <span className="span" onClick={handleForgotPasswordClick}>
-                  Know Your Password? <b>Login now.</b>
+                Know Your Password? <b>Login now.</b>
               </span>)}
 
             <small>

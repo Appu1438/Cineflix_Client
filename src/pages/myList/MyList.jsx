@@ -13,8 +13,10 @@ import { LikesContext } from '../../context/likesContext/LikesContext';
 import { get_User_Likes } from '../../context/likesContext/apiCalls';
 import Modal from '../../components/modal/Modal'; // Import the Modal component
 import axiosInstance from '../../api/axiosInstance';
-import { updateUser } from '../../context/authContext/apiCalls';
-
+import { logout, updateUser } from '../../context/authContext/apiCalls';
+import EditIcon from '@mui/icons-material/Edit';
+import LogoutIcon from '@mui/icons-material/Logout';
+import { Button } from '@mui/material';
 export default function MyList() {
     const { user, dispatch: dispatchUser } = useContext(AuthContext);
     const { fav, dispatch: dispatchFav } = useContext(FavContext);
@@ -52,6 +54,11 @@ export default function MyList() {
     const handleProfileUpdate = async (updatedData) => {
         updateUser(updatedData, dispatchUser)
     };
+    const handleSignOut = () => {
+
+        logout()
+
+    }
 
     // Scroll to top
     useEffect(() => {
@@ -61,7 +68,7 @@ export default function MyList() {
         });
     }, []);
 
-    
+
 
     return (
         <div className="my-list">
@@ -80,8 +87,25 @@ export default function MyList() {
                     </div>
                 </div>
 
-                {/* Edit Button */}
-                <button className="edit-button" onClick={handleEdit}>Edit Profile</button>
+                {/* Edit Button with Icon */}
+                <Button
+                    className="edit-button"
+                    onClick={handleEdit}
+                    variant="contained"
+                    startIcon={<EditIcon />}
+                >
+                    Edit Profile
+                </Button>
+
+                {/* Sign Out Button with Icon */}
+                <Button
+                    className="signout-button"
+                    onClick={handleSignOut}
+                    variant="contained"
+                    startIcon={<LogoutIcon />}
+                >
+                    Sign Out
+                </Button>
             </div>
 
             {fav?.content?.length > 0 ? (<List list={fav} />) : (null)}
@@ -99,4 +123,5 @@ export default function MyList() {
             />
         </div>
     );
-}
+
+}    

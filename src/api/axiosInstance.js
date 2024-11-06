@@ -5,8 +5,8 @@ const storedUser = JSON.parse(localStorage.getItem('user'));
 
 // Create an Axios instance
 const axiosInstance = axios.create({
-    baseURL: "http://192.168.1.2:5000/api", // Set the base URL
-    // baseURL: process.env.REACT_APP_API_URL, // Set the base URL
+    // baseURL: "http://192.168.1.5:5000/api", // Set the base URL
+    baseURL: process.env.REACT_APP_API_URL, // Set the base URL
     headers: {
         'Content-Type': 'application/json', // Set common headers
     },
@@ -42,25 +42,29 @@ axiosInstance.interceptors.response.use(
         const originalRequest = error.config;
         // Check for 401 or 403 error and if this request hasn't been retried
         if (error.response && (error.response.status === 401 || error.response.status === 403) && !originalRequest._retry) {
-            originalRequest._retry = true;
-           
-                try {
-                    console.log('Attempting to refresh token');
-
-                    const accessToken = await refresh()
-
-                    console.log('New access token:', accessToken);
-
-
-                    // Retry the original request with the new access token
-                    originalRequest.headers['Authorization'] = `Bearer ${accessToken}`;
-                    return axiosInstance(originalRequest);
-
-                } catch (refreshError) {
-                    logout()
-                    return Promise.reject(refreshError);
-                }
+            if (originalRequest.url.includes('auth/login')) {
+                return Promise.reject(error); // Forward the error without retry for login
             }
+
+            originalRequest._retry = true;
+
+            try {
+                console.log('Attempting to refresh token');
+
+                const accessToken = await refresh()
+
+                console.log('New access token:', accessToken);
+
+
+                // Retry the original request with the new access token
+                originalRequest.headers['Authorization'] = `Bearer ${accessToken}`;
+                return axiosInstance(originalRequest);
+
+            } catch (refreshError) {
+                logout()
+                return Promise.reject(refreshError);
+            }
+        }
 
         return Promise.reject(error);
     }

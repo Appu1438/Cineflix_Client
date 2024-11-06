@@ -17,7 +17,7 @@ import { WatchLaterContext } from '../../context/watchLaterContext/WatchLaterCon
 import { LikesContext } from '../../context/likesContext/LikesContext';
 import { add_User_WatchLater, get_User_WatchLater, remove_User_WatchLater } from '../../context/watchLaterContext/apiCalls';
 import { add_User_Likes, get_User_Likes, remove_User_Likes } from '../../context/likesContext/apiCalls';
-import { toast } from 'react-toastify';
+import { toast,ToastContainer } from 'react-toastify';
 import { formatCount } from '../../utils/formatCount';
 import { Link, useLocation } from 'react-router-dom';
 import { FacebookShareButton, TwitterShareButton, WhatsappShareButton, FacebookIcon, TwitterIcon, WhatsappIcon } from 'react-share'; // Importing share buttons and icons
@@ -101,6 +101,7 @@ export default function Icons({ movie }) {
     return (
         
         <div className="icons">
+            <ToastContainer/>
             <Link to={isInfoPage ? `/watch/${movie._id}` : `/info/${movie._id}`} className="link">
                 <div className="iconContainer">
                     {isInfoPage ? (

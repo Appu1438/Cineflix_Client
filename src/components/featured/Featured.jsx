@@ -1,18 +1,30 @@
 import './featured.scss';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import { Slide } from 'react-slideshow-image';
-import 'react-slideshow-image/dist/styles.css';
 import { useEffect, useState } from 'react';
 import axiosInstance from '../../api/axiosInstance';
 import { fetchGenres } from '../../api/fetchGenres';
 import { Link } from 'react-router-dom';
 import Spinner from '../spinner/Spinner';
+import Slider from 'react-slick';
+import "slick-carousel/slick/slick.css"; 
+import "slick-carousel/slick/slick-theme.css";
 
 const Featured = ({ type, setGenre }) => {
   const [genres, setGenres] = useState([]);
   const [content, setContent] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const sliderSettings = {
+    dots: false, // Disable dots if you don't need them
+    infinite: true,
+    autoplay: true,
+    autoplaySpeed: 5000,
+    speed: 3000,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    arrows: false // Hide arrows
+  };
 
   useEffect(() => {
     const loadGenres = async () => {
@@ -30,19 +42,8 @@ const Featured = ({ type, setGenre }) => {
     const getRandomContent = async () => {
       try {
         const response = await axiosInstance.get(`movies/random?type=${type}`);
-
-        // Log the response data for debugging
-        console.log('Response data:', response.data);
-
-        // Filter to ensure valid content
         const validContent = response.data.filter(item => item && item.img && item.imgTitle);
-
-        // Limit to the first 5 valid items
         const limitedContent = validContent.slice(0, 5);
-
-        // Log the valid content for debugging
-        console.log('Limited content:', limitedContent);
-
         setContent(limitedContent);
         setLoading(false);
       } catch (error) {
@@ -58,13 +59,8 @@ const Featured = ({ type, setGenre }) => {
       {loading ? (
         <Spinner />
       ) : (
-        <Slide
-          autoplay
-          transitionDuration={2000}
-          duration={3000}
-          easing='ease'
-        >
-          {content.length > 0 && content.map((slide, index) => (
+        <Slider {...sliderSettings}>
+          {content.map((slide, index) => (
             <div className="hero" key={index}>
               <img src={slide.img} alt="" className="banner-img" />
               <div className="hero-caption">
@@ -82,7 +78,7 @@ const Featured = ({ type, setGenre }) => {
               </div>
             </div>
           ))}
-        </Slide>
+        </Slider>
       )}
     </div>
   );
