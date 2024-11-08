@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 import StarComponent from '../starComponent/StarComponent';
 import { Delete } from '@mui/icons-material';
 import { format } from 'date-fns';
-import StarRatingComponent from 'react-star-rating-component';
+import ReactStarRatings from 'react-star-ratings'; // Import the new library
 
 export const ReviewsComponent = ({ id, user, reviews, setReviews }) => {
 
@@ -210,7 +210,18 @@ export const ReviewsComponent = ({ id, user, reviews, setReviews }) => {
 
                 <div className="addReview">
                     <h1>Add Your Review</h1>
-                    <StarRatingComponent
+                    <ReactStarRatings
+                        rating={rating}
+                        starRatedColor="gold"
+                        starEmptyColor="#CCCCCC"
+                        numberOfStars={5}
+                        name="rating"
+                        starDimension="20px"
+                        starSpacing="3px"
+                        className="starRatingInput"
+                        changeRating={onStarClick} // Update the rating when a user clicks a star
+                    />
+                    {/* <StarRatingComponent
                         name="rateMovie"
                         starCount={5}
                         value={rating}
@@ -218,7 +229,7 @@ export const ReviewsComponent = ({ id, user, reviews, setReviews }) => {
                         starColor="#FFD700"
                         emptyStarColor="#CCCCCC"
                         className="starRatingInput"
-                    />
+                    /> */}
                     <textarea
                         value={newReview}
                         onChange={(e) => setNewReview(e.target.value)}

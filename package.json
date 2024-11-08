@@ -25,7 +25,7 @@
     "react-share": "^5.1.0",
     "react-slick": "^0.30.2",
     "react-slideshow-image": "^4.3.1",
-    "react-star-rating-component": "^1.4.1",
+    "react-star-ratings": "^2.3.0",
     "react-toastify": "^10.0.5",
     "sass": "^1.77.8",
     "slick-carousel": "^1.8.1",

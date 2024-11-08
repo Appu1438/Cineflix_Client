@@ -17,7 +17,6 @@ import { add_User_Fav, get_User_Fav, remove_User_Fav } from '../../context/favCo
 import { add_User_WatchLater, get_User_WatchLater, remove_User_WatchLater } from '../../context/watchLaterContext/apiCalls';
 import { toast } from 'react-toastify';
 import { add_User_Likes, get_User_Likes, remove_User_Likes } from '../../context/likesContext/apiCalls';
-import StarRatingComponent from 'react-star-rating-component';
 import axiosInstance from '../../api/axiosInstance';
 import Spinner from '../../components/spinner/Spinner';
 import { formatCount } from '../../utils/formatCount';
