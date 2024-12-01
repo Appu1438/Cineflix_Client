@@ -110,87 +110,89 @@ const Watch = () => {
         };
     }, [id, fav, likes, reviews]);
 
-    const handleBeforeUnload = () => {
+    const handleBeforeUnload = useCallback(() => {
         if (watchedPosition > 0) {
             // Only update history if the watched position is greater than 0
-            add_User_History({ userId: user._id, movieId: movie?._id, watchedPosition }, dispatch);
+            add_User_History(
+                { userId: user?._id, movieId: movie?._id, watchedPosition },
+                dispatch
+            );
         }
-    };
+    }, [dispatch, user?._id, movie?._id, watchedPosition]);
 
     useEffect(() => {
-        // Add event listener for page unload
         const beforeUnloadHandler = (event) => {
-            handleBeforeUnload(); // Call your custom logic
-            // You can also set a message for confirmation if you need the user to acknowledge the leave
+            handleBeforeUnload();
+            // Optional: Add confirmation dialog (modern browsers may ignore this)
             // event.preventDefault();
-            // event.returnValue = ''; // Required for modern browsers to trigger the prompt
+            // event.returnValue = "";
         };
-    window.addEventListener('beforeunload', beforeUnloadHandler);
 
-    // Cleanup event listener on component unmount
-    return () => {
-        window.removeEventListener('beforeunload', beforeUnloadHandler);
-        // Save history when component unmounts (if needed)
-        handleBeforeUnload(); // Ensure history is updated when the component unmounts
-    };
-}, [dispatch, user?._id, movie?._id, watchedPosition]);
+        // Add event listener
+        window.addEventListener("beforeunload", beforeUnloadHandler);
 
-
-
-
-return (
-    <div className="movieInfoContainer">
-        {movie ? (
-            <>
-                <div className="detailsReviewsContainer">
-                    <div className="movieHeader">
-                        <div className="trailer">
-                            <VideoPlayer
-                                key={movie._id}
-                                videoUrl={movie.video}
-                                subtitleUrl={movie.videoSubtitle}
-                                watchedPortion={watchedPosition}
-                                setWatchedPortion={setWatchedPosition}
-                            />
-                            <Icons movie={movie} />
-
-                        </div>
-
-                        <div className="details">
-                            <h1>Watch : {movie.title}</h1>
-                            <p>{movie.desc}</p>
-                            <p>{movie.genre.join(' ,  ')}</p>
+        // Cleanup event listener
+        return () => {
+            window.removeEventListener("beforeunload", beforeUnloadHandler);
+            handleBeforeUnload(); // Save history on unmount
+        };
+    }, [handleBeforeUnload]);
 
 
-                            <div className="averageRating">
-                                <h4>Rating: {movie.average.toFixed(1)}/5</h4>
-                                <StarComponent rating={movie.average} />
+
+    return (
+        <div className="movieInfoContainer">
+            {movie ? (
+                <>
+                    <div className="detailsReviewsContainer">
+                        <div className="movieHeader">
+                            <div className="trailer">
+                                <VideoPlayer
+                                    key={movie._id}
+                                    videoUrl={movie.video}
+                                    subtitleUrl={movie.videoSubtitle}
+                                    watchedPortion={watchedPosition}
+                                    setWatchedPortion={setWatchedPosition}
+                                />
+                                <Icons movie={movie} />
+
+                            </div>
+
+                            <div className="details">
+                                <h1>Watch : {movie.title}</h1>
+                                <p>{movie.desc}</p>
+                                <p>{movie.genre.join(' ,  ')}</p>
+
+
+                                <div className="averageRating">
+                                    <h4>Rating: {movie.average.toFixed(1)}/5</h4>
+                                    <StarComponent rating={movie.average} />
+                                </div>
                             </div>
                         </div>
+
+                        {/* Reviews Section */}
+                        <div className="reviewsSection">
+                            <h2>Reviews {movie.reviewcount !== undefined ? `(${formatCount(movie.reviewcount)})` : ""}</h2>
+                            <ReviewsComponent id={id} user={user} reviews={reviews} setReviews={setReviews} />
+
+                        </div>
                     </div>
 
-                    {/* Reviews Section */}
-                    <div className="reviewsSection">
-                        <h2>Reviews {movie.reviewcount !== undefined ? `(${formatCount(movie.reviewcount)})` : ""}</h2>
-                        <ReviewsComponent id={id} user={user} reviews={reviews} setReviews={setReviews} />
+                    {/* Recomendation section*/}
+                    {movie && (
+                        <div className="recommendedMovies">
+                            <h2>Recommended Movies</h2>
+                            <RecommendedMovies movieId={id} />
+                        </div>
+                    )}
 
-                    </div>
-                </div>
-
-                {/* Recomendation section*/}
-                {movie && (
-                    <div className="recommendedMovies">
-                        <h2>Recommended Movies</h2>
-                        <RecommendedMovies movieId={id} />
-                    </div>
-                )}
-
-            </>
-        ) : (
-            <Spinner />
-        )}
-    </div>
-);
+                </>
+            ) : (
+                <Spinner />
+            )}
+        </div>
+    );
 
 };
 
